@@ -1,7 +1,9 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_flame/ground.dart';
+import 'package:flutter_flame/my_game.dart';
 
-class Player extends PositionComponent {
+class Player extends PositionComponent with HasGameRef<MyGame> {
   Player({this.playerRadius = 15});
 
   final _velocity = Vector2.zero();
@@ -21,7 +23,14 @@ class Player extends PositionComponent {
   void update(double dt) {
     super.update(dt);
     position += _velocity * dt;
-    _velocity.y += _gravity * dt;
+
+    Ground ground = gameRef.findByKeyName(Ground.keyName)!;
+    if (positionOfAnchor(Anchor.bottomCenter).y > ground.position.y) {
+      _velocity.setZero();
+      position.setValues(0, ground.position.y - (height / 2));
+    } else {
+      _velocity.y += _gravity * dt;
+    }
   }
 
   @override

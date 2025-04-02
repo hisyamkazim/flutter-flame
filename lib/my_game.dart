@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_flame/ground.dart';
 import 'package:flutter_flame/player.dart';
 import 'package:flame/game.dart';
 import 'package:flame/camera.dart';
@@ -18,14 +19,8 @@ class MyGame extends FlameGame with TapCallbacks {
 
   @override
   void onMount() {
+    world.add(Ground(position: Vector2(0, 400)));
     world.add(myPlayer = Player());
-
-    world.add(RectangleComponent(
-        position: Vector2(-100, -100), size: Vector2.all(20)));
-    world.add(
-        RectangleComponent(position: Vector2(-200, 0), size: Vector2.all(20)));
-    world.add(RectangleComponent(
-        position: Vector2(-300, 100), size: Vector2.all(20)));
     super.onMount();
   }
 
