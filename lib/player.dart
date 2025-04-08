@@ -4,7 +4,7 @@ import 'package:flutter_flame/ground.dart';
 import 'package:flutter_flame/my_game.dart';
 
 class Player extends PositionComponent with HasGameRef<MyGame> {
-  Player({this.playerRadius = 15});
+  Player({this.playerRadius = 15, required super.position});
 
   final _velocity = Vector2.zero();
   final _gravity = 980.0;
@@ -13,7 +13,6 @@ class Player extends PositionComponent with HasGameRef<MyGame> {
 
   @override
   void onMount() {
-    position = Vector2.zero();
     size = Vector2.all(playerRadius * 2);
     anchor = Anchor.center;
     super.onMount();
