@@ -4,7 +4,6 @@ import 'package:flutter_flame/circle_rotator.dart';
 import 'package:flutter_flame/ground.dart';
 import 'package:flutter_flame/player.dart';
 import 'package:flame/game.dart';
-import 'package:flame/camera.dart';
 import 'package:flame/events.dart';
 
 class MyGame extends FlameGame with TapCallbacks {
