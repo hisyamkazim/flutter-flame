@@ -18,8 +18,6 @@ class MyGame extends FlameGame with TapCallbacks {
         Colors.greenAccent,
         Colors.blueAccent,
         Colors.yellowAccent,
-        Colors.purpleAccent,
-        Colors.pinkAccent,
       ]})
       : super(
             camera:
