@@ -1,3 +1,4 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ class CircleArc extends PositionComponent with ParentIsA<CircleRotator> {
   void onMount() {
     size = parent.size;
     position = size / 2;
-
+    _addHitbox();
     super.onMount();
   }
 
@@ -60,5 +61,26 @@ class CircleArc extends PositionComponent with ParentIsA<CircleRotator> {
           ..color = color
           ..style = PaintingStyle.stroke
           ..strokeWidth = parent.thickness);
+  }
+
+  void _addHitbox() {
+    final center = size / 2;
+    const precision = 8;
+    final segment = sweepAngle / (precision - 1);
+    List<Vector2> vertices = [];
+    final radius = size.x / 2;
+
+    for (int i = 0; i < precision; i++) {
+      final thisSegment = startAngle + segment * i;
+      vertices.add(center +
+          Vector2(math.cos(thisSegment), math.sin(thisSegment)) * radius);
+    }
+    for (int i = precision - 1; i >= 0; i--) {
+      final thisSegment = startAngle + segment * i;
+      vertices.add(center +
+          Vector2(math.cos(thisSegment), math.sin(thisSegment)) *
+              (radius - parent.thickness));
+    }
+    add(PolygonHitbox(vertices, collisionType: CollisionType.passive));
   }
 }

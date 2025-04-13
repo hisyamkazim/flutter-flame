@@ -1,12 +1,13 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flame/circle_rotator.dart';
+import 'package:flutter_flame/color_switcher.dart';
 import 'package:flutter_flame/ground.dart';
 import 'package:flutter_flame/player.dart';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
 
-class MyGame extends FlameGame with TapCallbacks {
+class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   late Player myPlayer;
 
   final List<Color> gameColors;
@@ -27,9 +28,8 @@ class MyGame extends FlameGame with TapCallbacks {
 
   @override
   void onMount() {
-    world.add(Ground(position: Vector2(0, 400)));
-    world.add(myPlayer = Player(position: Vector2(0, 250)));
-    generateGameComponents();
+    _initializeGame();
+
     super.onMount();
   }
 
@@ -51,7 +51,25 @@ class MyGame extends FlameGame with TapCallbacks {
     super.onTapDown(event);
   }
 
-  void generateGameComponents() {
-    world.add(CircleRotator(position: Vector2(0, 100), size: Vector2.all(200)));
+  void _initializeGame() {
+    camera.moveTo(Vector2.zero());
+    world.add(Ground(position: Vector2(0, 400)));
+    world.add(myPlayer = Player(position: Vector2(0, 250)));
+    _generateGameComponents();
+  }
+
+  void _generateGameComponents() {
+    world.add(ColorSwitcher(position: Vector2(0, 180)));
+    world.add(CircleRotator(position: Vector2.zero(), size: Vector2.all(200)));
+    world.add(ColorSwitcher(position: Vector2(0, -200)));
+    world
+        .add(CircleRotator(position: Vector2(0, -400), size: Vector2.all(150)));
+  }
+
+  void gameOver() {
+    for (var child in world.children) {
+      child.removeFromParent();
+    }
+    _initializeGame();
   }
 }
