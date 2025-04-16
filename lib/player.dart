@@ -1,8 +1,11 @@
+// ignore_for_file: unused_import
+
 import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:flame/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flame/circle_rotator.dart';
 import 'package:flutter_flame/color_switcher.dart';
