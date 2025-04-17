@@ -11,10 +11,12 @@ import 'package:flutter_flame/circle_rotator.dart';
 import 'package:flutter_flame/color_switcher.dart';
 import 'package:flutter_flame/ground.dart';
 import 'package:flutter_flame/my_game.dart';
+import 'package:flutter_flame/star_component.dart';
 
 class Player extends PositionComponent
     with HasGameRef<MyGame>, CollisionCallbacks {
-  Player({this.playerRadius = 12, required super.position});
+  Player({this.playerRadius = 12, required super.position})
+      : super(priority: 20);
 
   final _velocity = Vector2.zero();
   final _gravity = 980.0;
@@ -74,10 +76,12 @@ class Player extends PositionComponent
       other.removeFromParent();
       _changeColorRandomly();
     } else if (other is CircleArc) {
-      print('Player onCollision with circle arc color: ${other.color}');
       if (_color != other.color) {
         gameRef.gameOver();
       }
+    } else if (other is StarComponent) {
+      other.showCollectEffect();
+      gameRef.increaseScore();
     }
   }
 

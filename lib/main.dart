@@ -32,17 +32,32 @@ class _HomePageState extends State<HomePage> {
         if (!_myGame.isGamePaused)
           Align(
             alignment: Alignment.topLeft,
-            child: IconButton(
-                onPressed: () {
-                  setState(() {
-                    if (_myGame.isGamePaused) {
-                      _myGame.resumeGame();
-                    } else {
-                      _myGame.pauseGame();
-                    }
-                  });
-                },
-                icon: const Icon(Icons.pause)),
+            child: Row(
+              children: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        if (_myGame.isGamePaused) {
+                          _myGame.resumeGame();
+                        } else {
+                          _myGame.pauseGame();
+                        }
+                      });
+                    },
+                    icon: const Icon(Icons.pause)),
+                ValueListenableBuilder(
+                    valueListenable: _myGame.currentScore,
+                    builder: (context, int value, child) {
+                      return Text(
+                        value.toString(),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    })
+              ],
+            ),
           ),
         if (_myGame.isGamePaused)
           Container(
