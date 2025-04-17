@@ -26,17 +26,6 @@ class StarComponent extends PositionComponent {
         position: size / 2, size: size, anchor: Anchor.center);
   }
 
-  @override
-  void onMount() {
-    super.onMount();
-  }
-
-  @override
-  void update(double dt) {
-    super.update(dt);
-    // Add update logic here
-  }
-
   void showCollectEffect() {
     final rnd = Random();
     Vector2 randomVector2() => (Vector2.random(rnd) - Vector2.random(rnd)) * 80;
