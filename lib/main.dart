@@ -1,62 +1,95 @@
-import 'package:flame/components.dart';
-import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_flame/my_game.dart';
 
 void main() {
-  runApp(
-    GameWidget(game: MyGame()),
-  );
+  runApp(MaterialApp(
+    home: const HomePage(),
+    theme: ThemeData.dark(),
+  ));
 }
 
-class MyGame extends FlameGame with TapCallbacks {
-  late Player myPlayer;
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  Color backgroundColor() => const Color(0xff222222);
-
-  @override
-  void onMount() {
-    add(myPlayer = Player());
-    super.onMount();
-  }
-
-  @override
-  void onTapDown(TapDownEvent event) {
-    myPlayer.jump();
-    super.onTapDown(event);
-  }
+  State<HomePage> createState() => _HomePageState();
 }
 
-class Player extends PositionComponent {
-  final _velocity = Vector2(0, 30.0);
-  final _gravity = 980.0;
-  final _jumpSpeed = 350.0;
-
+class _HomePageState extends State<HomePage> {
+  late MyGame _myGame;
   @override
-  void onMount() {
-    position = Vector2(150, 100);
-    super.onMount();
+  void initState() {
+    _myGame = MyGame();
+    super.initState();
   }
 
   @override
-  void update(double dt) {
-    super.update(dt);
-    position += _velocity * dt;
-    _velocity.y += _gravity * dt;
-  }
-
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-    canvas.drawCircle(
-      position.toOffset(),
-      15,
-      Paint()..color = Colors.yellow,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(children: [
+        GameWidget(game: _myGame),
+        if (!_myGame.isGamePaused)
+          Align(
+            alignment: Alignment.topLeft,
+            child: SafeArea(
+              child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (_myGame.isGamePaused) {
+                        _myGame.resumeGame();
+                      } else {
+                        _myGame.pauseGame();
+                      }
+                    });
+                  },
+                  icon: const Icon(Icons.pause)),
+            ),
+          ),
+        Align(
+          alignment: Alignment.topCenter,
+          child: SafeArea(
+            child: ValueListenableBuilder(
+                valueListenable: _myGame.currentScore,
+                builder: (context, int value, child) {
+                  return Text(
+                    'Score: ${value.toString()}',
+                    style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        shadows: [Shadow(blurRadius: 4, color: Colors.black)]),
+                  );
+                }),
+          ),
+        ),
+        if (_myGame.isGamePaused)
+          Container(
+            color: Colors.black45,
+            child: Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'PAUSED!',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                    height: 140,
+                    width: 140,
+                    child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _myGame.resumeGame();
+                          });
+                        },
+                        icon: const Icon(Icons.play_arrow, size: 140)))
+              ],
+            )),
+          )
+      ]),
     );
-  }
-
-  void jump() {
-    _velocity.y = -_jumpSpeed;
   }
 }
