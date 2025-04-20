@@ -6,7 +6,7 @@ import 'dart:math' as math;
 import 'package:flutter_flame/my_game.dart';
 
 class ColorSwitcher extends PositionComponent
-    with HasGameRef<MyGame>, CollisionCallbacks {
+    with HasGameReference<MyGame>, CollisionCallbacks {
   final double radius;
   final _arcPaint = Paint();
 
@@ -29,15 +29,15 @@ class ColorSwitcher extends PositionComponent
   void render(Canvas canvas) {
     super.render(canvas);
     const circle = math.pi * 2;
-    final sweepAngle = circle / gameRef.gameColors.length;
-    for (int i = 0; i < gameRef.gameColors.length; i++) {
+    final sweepAngle = circle / game.gameColors.length;
+    for (int i = 0; i < game.gameColors.length; i++) {
       canvas.drawArc(
           size.toRect(),
           i * sweepAngle,
           sweepAngle,
           true,
           _arcPaint
-            ..color = gameRef.gameColors[i]
+            ..color = game.gameColors[i]
             ..style = PaintingStyle.fill);
     }
   }

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flame/my_game.dart';
 import 'dart:math' as math;
 
-class CircleRotator extends PositionComponent with HasGameRef<MyGame> {
+class CircleRotator extends PositionComponent with HasGameReference<MyGame> {
   CircleRotator(
       {required super.position,
       required super.size,
@@ -22,12 +22,10 @@ class CircleRotator extends PositionComponent with HasGameRef<MyGame> {
   void onLoad() {
     super.onLoad();
     const circle = math.pi * 2;
-    final sweep = circle / gameRef.gameColors.length;
-    for (int i = 0; i < gameRef.gameColors.length; i++) {
+    final sweep = circle / game.gameColors.length;
+    for (int i = 0; i < game.gameColors.length; i++) {
       add(CircleArc(
-          color: gameRef.gameColors[i],
-          startAngle: i * sweep,
-          sweepAngle: sweep));
+          color: game.gameColors[i], startAngle: i * sweep, sweepAngle: sweep));
     }
     add(RotateEffect.to(
         circle, EffectController(speed: rotationSpeed, infinite: true)));

@@ -15,7 +15,7 @@ import 'package:flutter_flame/my_game.dart';
 import 'package:flutter_flame/star_component.dart';
 
 class Player extends PositionComponent
-    with HasGameRef<MyGame>, CollisionCallbacks {
+    with HasGameReference<MyGame>, CollisionCallbacks {
   Player({this.playerRadius = 12, required super.position})
       : super(priority: 20);
 
@@ -48,7 +48,7 @@ class Player extends PositionComponent
     super.update(dt);
     position += _velocity * dt;
 
-    Ground ground = gameRef.findByKeyName(Ground.keyName)!;
+    Ground ground = game.findByKeyName(Ground.keyName)!;
     if (positionOfAnchor(Anchor.bottomCenter).y > ground.position.y) {
       _velocity.setZero();
       position.setValues(0, ground.position.y - (height / 2));
@@ -79,17 +79,17 @@ class Player extends PositionComponent
       _changeColorRandomly();
     } else if (other is CircleArc) {
       if (_color != other.color) {
-        gameRef.gameOver();
+        game.gameOver();
       }
     } else if (other is StarComponent) {
       other.showCollectEffect();
-      gameRef.increaseScore();
+      game.increaseScore();
       FlameAudio.play('collect.wav');
-      gameRef.checkToGenerateNextBatch(other);
+      game.checkToGenerateNextBatch(other);
     }
   }
 
   void _changeColorRandomly() {
-    _color = gameRef.gameColors.random();
+    _color = game.gameColors.random();
   }
 }
