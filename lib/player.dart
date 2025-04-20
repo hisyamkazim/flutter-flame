@@ -85,6 +85,7 @@ class Player extends PositionComponent
       other.showCollectEffect();
       gameRef.increaseScore();
       FlameAudio.play('collect.wav');
+      gameRef.checkToGenerateNextBatch(other);
     }
   }
 

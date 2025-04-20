@@ -18,9 +18,10 @@ import 'package:flutter_flame/star_component.dart';
 class MyGame extends FlameGame
     with TapCallbacks, HasCollisionDetection, HasDecorator, HasTimeScale {
   late Player myPlayer;
+  final Ground ground = Ground(position: Vector2(0, 400));
   final ValueNotifier<int> currentScore = ValueNotifier(0);
-
   final List<Color> gameColors;
+  final List<PositionComponent> _gameComponents = [];
 
   MyGame(
       {this.gameColors = const [
@@ -57,7 +58,6 @@ class MyGame extends FlameGame
   void update(double dt) {
     final cameraY = camera.viewfinder.position.y;
     final playerY = myPlayer.position.y;
-    // camera.viewfinder.position = myPlayer.position;
     if (playerY < cameraY) {
       camera.viewfinder.position = myPlayer.position;
     } else if (playerY > (cameraY + camera.visibleWorldRect.height)) {
@@ -75,30 +75,54 @@ class MyGame extends FlameGame
 
   void _initializeGame() {
     currentScore.value = 0;
-    camera.moveTo(Vector2.zero());
-    world.add(Ground(position: Vector2(0, 400)));
+    world.add(ground);
     world.add(myPlayer = Player(position: Vector2(0, 250)));
-    _generateGameComponents();
-    FlameAudio.bgm.play('soundtrack.mp3');
+    camera.moveTo(Vector2.zero());
+    _generateGameComponents(Vector2(0, 20));
+
+    // FlameAudio.bgm.play('soundtrack.mp3');
   }
 
-  void _generateGameComponents() {
-    world.add(ColorSwitcher(position: Vector2(0, 180)));
-    world.add(CircleRotator(position: Vector2.zero(), size: Vector2.all(200)));
-    world.add(StarComponent(position: Vector2.zero()));
-    world.add(ColorSwitcher(position: Vector2(0, -200)));
-    world
-        .add(CircleRotator(position: Vector2(0, -400), size: Vector2.all(150)));
-    world
-        .add(CircleRotator(position: Vector2(0, -400), size: Vector2.all(180)));
-    world.add(StarComponent(position: Vector2(0, -400)));
+  void _addComponentToTheGame(PositionComponent component) {
+    _gameComponents.add(component);
+    world.add(component);
+  }
+
+  void _generateGameComponents(Vector2 generateFromPosition) {
+    _addComponentToTheGame(
+        ColorSwitcher(position: generateFromPosition + Vector2(0, 180)));
+    _addComponentToTheGame(CircleRotator(
+        position: generateFromPosition + Vector2.zero(),
+        size: Vector2.all(200)));
+    _addComponentToTheGame(
+        StarComponent(position: generateFromPosition + Vector2.zero()));
+
+    generateFromPosition -= Vector2(0, 370);
+    _addComponentToTheGame(
+        ColorSwitcher(position: generateFromPosition + Vector2(0, 180)));
+    _addComponentToTheGame(CircleRotator(
+        position: generateFromPosition + Vector2.zero(),
+        size: Vector2.all(200)));
+    _addComponentToTheGame(
+        StarComponent(position: generateFromPosition + Vector2.zero()));
+
+    generateFromPosition -= Vector2(0, 240);
+    _addComponentToTheGame(
+        ColorSwitcher(position: generateFromPosition + Vector2(0, -200)));
+    _addComponentToTheGame(CircleRotator(
+        position: generateFromPosition + Vector2(0, -400),
+        size: Vector2.all(150)));
+    _addComponentToTheGame(CircleRotator(
+        position: generateFromPosition + Vector2(0, -400),
+        size: Vector2.all(180)));
+    _addComponentToTheGame(
+        StarComponent(position: generateFromPosition + Vector2(0, -400)));
   }
 
   void gameOver() {
     FlameAudio.bgm.stop();
-    for (var child in world.children) {
-      child.removeFromParent();
-    }
+    world.removeAll(world.children);
+    _gameComponents.clear();
     _initializeGame();
   }
 
@@ -119,5 +143,36 @@ class MyGame extends FlameGame
 
   void increaseScore() {
     currentScore.value++;
+  }
+
+  void checkToGenerateNextBatch(StarComponent starComponent) {
+    final allStarComponents =
+        _gameComponents.whereType<StarComponent>().toList();
+    final length = allStarComponents.length;
+    for (int i = 0; i < length; i++) {
+      if (starComponent == allStarComponents[i] && i >= length - 2) {
+        _generateGameComponents(
+            allStarComponents.last.position - Vector2(0, 400));
+        _tryToGarbageCollect(starComponent);
+      }
+    }
+  }
+
+  void _tryToGarbageCollect(StarComponent starComponent) {
+    final allComponents = _gameComponents.toList();
+    final length = allComponents.length;
+    for (int i = 0; i < length; i++) {
+      if (starComponent == allComponents[i] && i >= 15) {
+        _removeComponentsFromGame(i - 7);
+        break;
+      }
+    }
+  }
+
+  void _removeComponentsFromGame(int n) {
+    for (int i = n - 1; i >= 0; i--) {
+      _gameComponents[i].removeFromParent();
+      _gameComponents.removeAt(i);
+    }
   }
 }
