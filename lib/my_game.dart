@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:flame/flame.dart';
 import 'package:flame/rendering.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
@@ -36,11 +37,13 @@ class MyGame extends FlameGame
   Color backgroundColor() => const Color(0xff222222);
 
   @override
-  void onLoad() {
+  Future<void> onLoad() async {
+    await super.onLoad();
     decorator = PaintDecorator.blur(0);
-    // debugMode = true;
     FlameAudio.bgm.initialize();
-    super.onLoad();
+    await Flame.images
+        .loadAll(['star_icon_white.png', '315851_finger_tap_icon.png']);
+    await FlameAudio.audioCache.loadAll(['collect.wav', 'soundtrack.mp3']);
   }
 
   @override

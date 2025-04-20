@@ -23,6 +23,7 @@ class Player extends PositionComponent
   final _gravity = 980.0;
   final _jumpSpeed = 350.0;
   final double playerRadius;
+  final _playerPaint = Paint();
 
   Color _color = Colors.white;
 
@@ -62,7 +63,7 @@ class Player extends PositionComponent
     canvas.drawCircle(
       (size / 2).toOffset(),
       playerRadius,
-      Paint()..color = _color,
+      _playerPaint..color = _color,
     );
   }
 

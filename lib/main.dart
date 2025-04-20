@@ -33,34 +33,35 @@ class _HomePageState extends State<HomePage> {
           Align(
             alignment: Alignment.topLeft,
             child: SafeArea(
-              child: Row(
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        setState(() {
-                          if (_myGame.isGamePaused) {
-                            _myGame.resumeGame();
-                          } else {
-                            _myGame.pauseGame();
-                          }
-                        });
-                      },
-                      icon: const Icon(Icons.pause)),
-                  ValueListenableBuilder(
-                      valueListenable: _myGame.currentScore,
-                      builder: (context, int value, child) {
-                        return Text(
-                          value.toString(),
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        );
-                      })
-                ],
-              ),
+              child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (_myGame.isGamePaused) {
+                        _myGame.resumeGame();
+                      } else {
+                        _myGame.pauseGame();
+                      }
+                    });
+                  },
+                  icon: const Icon(Icons.pause)),
             ),
           ),
+        Align(
+          alignment: Alignment.topCenter,
+          child: SafeArea(
+            child: ValueListenableBuilder(
+                valueListenable: _myGame.currentScore,
+                builder: (context, int value, child) {
+                  return Text(
+                    'Score: ${value.toString()}',
+                    style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        shadows: [Shadow(blurRadius: 4, color: Colors.black)]),
+                  );
+                }),
+          ),
+        ),
         if (_myGame.isGamePaused)
           Container(
             color: Colors.black45,

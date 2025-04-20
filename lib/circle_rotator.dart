@@ -16,6 +16,7 @@ class CircleRotator extends PositionComponent with HasGameRef<MyGame> {
 
   final double thickness;
   final double rotationSpeed;
+  final _arcPaint = Paint();
 
   @override
   void onLoad() {
@@ -57,7 +58,7 @@ class CircleArc extends PositionComponent with ParentIsA<CircleRotator> {
         startAngle,
         sweepAngle,
         false,
-        Paint()
+        parent._arcPaint
           ..color = color
           ..style = PaintingStyle.stroke
           ..strokeWidth = parent.thickness);

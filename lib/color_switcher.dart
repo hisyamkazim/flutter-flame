@@ -8,6 +8,7 @@ import 'package:flutter_flame/my_game.dart';
 class ColorSwitcher extends PositionComponent
     with HasGameRef<MyGame>, CollisionCallbacks {
   final double radius;
+  final _arcPaint = Paint();
 
   ColorSwitcher({
     required super.position,
@@ -35,7 +36,7 @@ class ColorSwitcher extends PositionComponent
           i * sweepAngle,
           sweepAngle,
           true,
-          Paint()
+          _arcPaint
             ..color = gameRef.gameColors[i]
             ..style = PaintingStyle.fill);
     }
