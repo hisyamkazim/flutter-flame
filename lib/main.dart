@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flame/my_game.dart';
+import 'package:flutter_flame/overlays/main_menu.dart';
 import 'package:flutter_flame/overlays/pause_menu.dart';
 
 void main() {
@@ -29,12 +30,16 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: [
-        GameWidget(game: _myGame, overlayBuilderMap: {
-          'PauseMenu': (_, MyGame game) => PauseMenu(game: game),
-          'GameOverMenu': (BuildContext context, MyGame game) {
-            return Text('A secondary menu');
-          }
-        }),
+        GameWidget(
+          game: _myGame,
+          overlayBuilderMap: {
+            'MainMenu': (_, MyGame game) => MainMenu(game: game),
+            'PauseMenu': (_, MyGame game) => PauseMenu(game: game),
+            'GameOverMenu': (BuildContext context, MyGame game) {
+              return Text('A secondary menu');
+            }
+          },
+        ),
         ValueListenableBuilder(
             valueListenable: _myGame.isGamePaused,
             builder: (context, _, child) {

@@ -75,13 +75,15 @@ class MyGame extends FlameGame
   }
 
   void _initializeGame() {
+    overlays.add('MainMenu');
+    (decorator as PaintDecorator).addBlur(10);
     currentScore.value = 0;
     world.add(ground);
     world.add(myPlayer = Player(position: Vector2(0, 250)));
     camera.moveTo(Vector2.zero());
     _generateGameComponents(Vector2(0, 20));
 
-    // FlameAudio.bgm.play('soundtrack.mp3');
+    FlameAudio.bgm.play('soundtrack.mp3');
   }
 
   void _addComponentToTheGame(PositionComponent component) {
@@ -176,5 +178,10 @@ class MyGame extends FlameGame
       _gameComponents[i].removeFromParent();
       _gameComponents.removeAt(i);
     }
+  }
+
+  void startGame() {
+    overlays.remove('MainMenu');
+    (decorator as PaintDecorator).addBlur(0);
   }
 }
