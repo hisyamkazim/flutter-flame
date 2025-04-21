@@ -128,6 +128,8 @@ class MyGame extends FlameGame
       child.removeFromParent();
     }
     _gameComponents.clear();
+    overlays.clear();
+    isGamePaused.value = false;
     _initializeGame();
   }
 

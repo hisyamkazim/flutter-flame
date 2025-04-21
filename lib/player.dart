@@ -79,7 +79,8 @@ class Player extends PositionComponent
       _changeColorRandomly();
     } else if (other is CircleArc) {
       if (_color != other.color) {
-        game.gameOver();
+        game.isGamePaused.value = true;
+        game.overlays.add('GameOverMenu');
       }
     } else if (other is StarComponent) {
       other.showCollectEffect();
