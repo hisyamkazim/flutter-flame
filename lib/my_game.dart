@@ -20,6 +20,7 @@ class MyGame extends FlameGame
   late Player myPlayer;
   final Ground ground = Ground(position: Vector2(0, 400));
   final ValueNotifier<int> currentScore = ValueNotifier(0);
+  final ValueNotifier<bool> isGamePaused = ValueNotifier(false);
   final List<Color> gameColors;
   final List<PositionComponent> _gameComponents = [];
 
@@ -126,19 +127,20 @@ class MyGame extends FlameGame
     _initializeGame();
   }
 
-  bool get isGamePaused => timeScale == 0.0;
-  bool get isGamePlaying => !isGamePaused;
-
   void pauseGame() {
+    isGamePaused.value = true;
     FlameAudio.bgm.pause();
     (decorator as PaintDecorator).addBlur(10);
     timeScale = 0.0;
+    overlays.add('PauseMenu');
   }
 
   void resumeGame() {
+    isGamePaused.value = false;
     FlameAudio.bgm.resume();
     (decorator as PaintDecorator).addBlur(0);
     timeScale = 1.0;
+    overlays.remove('PauseMenu');
   }
 
   void increaseScore() {

@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flame/my_game.dart';
+import 'package:flutter_flame/overlays/pause_menu.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -28,24 +29,32 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: [
-        GameWidget(game: _myGame),
-        if (!_myGame.isGamePaused)
-          Align(
-            alignment: Alignment.topLeft,
-            child: SafeArea(
-              child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      if (_myGame.isGamePaused) {
-                        _myGame.resumeGame();
-                      } else {
-                        _myGame.pauseGame();
-                      }
-                    });
-                  },
-                  icon: const Icon(Icons.pause)),
-            ),
-          ),
+        GameWidget(game: _myGame, overlayBuilderMap: {
+          'PauseMenu': (_, MyGame game) => PauseMenu(game: game),
+          'GameOverMenu': (BuildContext context, MyGame game) {
+            return Text('A secondary menu');
+          }
+        }),
+        ValueListenableBuilder(
+            valueListenable: _myGame.isGamePaused,
+            builder: (context, _, child) {
+              if (!_myGame.isGamePaused.value) {
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: SafeArea(
+                    child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _myGame.pauseGame();
+                          });
+                        },
+                        icon: const Icon(Icons.pause)),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
         Align(
           alignment: Alignment.topCenter,
           child: SafeArea(
@@ -62,33 +71,6 @@ class _HomePageState extends State<HomePage> {
                 }),
           ),
         ),
-        if (_myGame.isGamePaused)
-          Container(
-            color: Colors.black45,
-            child: Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'PAUSED!',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                    height: 140,
-                    width: 140,
-                    child: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _myGame.resumeGame();
-                          });
-                        },
-                        icon: const Icon(Icons.play_arrow, size: 140)))
-              ],
-            )),
-          )
       ]),
     );
   }
