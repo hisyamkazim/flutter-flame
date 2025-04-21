@@ -124,7 +124,9 @@ class MyGame extends FlameGame
 
   void gameOver() {
     FlameAudio.bgm.stop();
-    world.removeAll(world.children);
+    for (var child in world.children) {
+      child.removeFromParent();
+    }
     _gameComponents.clear();
     _initializeGame();
   }
