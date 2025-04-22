@@ -7,13 +7,13 @@ import 'package:flame/flame.dart';
 import 'package:flame/rendering.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flame/circle_rotator.dart';
-import 'package:flutter_flame/color_switcher.dart';
-import 'package:flutter_flame/ground.dart';
-import 'package:flutter_flame/player.dart';
+import 'package:infinite_circle/circle_rotator.dart';
+import 'package:infinite_circle/color_switcher.dart';
+import 'package:infinite_circle/ground.dart';
+import 'package:infinite_circle/player.dart';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
-import 'package:flutter_flame/star_component.dart';
+import 'package:infinite_circle/star_component.dart';
 
 class MyGame extends FlameGame
     with TapCallbacks, HasCollisionDetection, HasDecorator, HasTimeScale {

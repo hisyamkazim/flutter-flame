@@ -3,7 +3,7 @@ import 'package:flame/components.dart';
 import 'dart:ui';
 import 'dart:math' as math;
 
-import 'package:flutter_flame/my_game.dart';
+import 'package:infinite_circle/my_game.dart';
 
 class ColorSwitcher extends PositionComponent
     with HasGameReference<MyGame>, CollisionCallbacks {

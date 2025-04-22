@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flame/my_game.dart';
+import 'package:infinite_circle/my_game.dart';
 
 class PauseMenu extends StatelessWidget {
   final MyGame game;

@@ -8,11 +8,11 @@ import 'package:flame/extensions.dart';
 import 'package:flame/rendering.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flame/circle_rotator.dart';
-import 'package:flutter_flame/color_switcher.dart';
-import 'package:flutter_flame/ground.dart';
-import 'package:flutter_flame/my_game.dart';
-import 'package:flutter_flame/star_component.dart';
+import 'package:infinite_circle/circle_rotator.dart';
+import 'package:infinite_circle/color_switcher.dart';
+import 'package:infinite_circle/ground.dart';
+import 'package:infinite_circle/my_game.dart';
+import 'package:infinite_circle/star_component.dart';
 
 class Player extends PositionComponent
     with HasGameReference<MyGame>, CollisionCallbacks {

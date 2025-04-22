@@ -2,7 +2,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flame/my_game.dart';
+import 'package:infinite_circle/my_game.dart';
 import 'dart:math' as math;
 
 class CircleRotator extends PositionComponent with HasGameReference<MyGame> {

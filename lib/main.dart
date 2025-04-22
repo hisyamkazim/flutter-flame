@@ -1,9 +1,9 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flame/my_game.dart';
-import 'package:flutter_flame/overlays/gameover_menu.dart';
-import 'package:flutter_flame/overlays/main_menu.dart';
-import 'package:flutter_flame/overlays/pause_menu.dart';
+import 'package:infinite_circle/my_game.dart';
+import 'package:infinite_circle/overlays/gameover_menu.dart';
+import 'package:infinite_circle/overlays/main_menu.dart';
+import 'package:infinite_circle/overlays/pause_menu.dart';
 
 void main() {
   runApp(MaterialApp(
