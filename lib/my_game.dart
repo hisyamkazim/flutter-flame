@@ -14,6 +14,7 @@ import 'package:infinite_circle/player.dart';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
 import 'package:infinite_circle/star_component.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyGame extends FlameGame
     with TapCallbacks, HasCollisionDetection, HasDecorator, HasTimeScale {
@@ -23,6 +24,7 @@ class MyGame extends FlameGame
   final ValueNotifier<bool> isGamePaused = ValueNotifier(false);
   final List<Color> gameColors;
   final List<PositionComponent> _gameComponents = [];
+  late int? highestScore;
 
   MyGame(
       {this.gameColors = const [
@@ -122,15 +124,15 @@ class MyGame extends FlameGame
         StarComponent(position: generateFromPosition + Vector2(0, -400)));
   }
 
-  void gameOver() {
-    FlameAudio.bgm.stop();
-    for (var child in world.children) {
-      child.removeFromParent();
+  Future<void> gameOver() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    highestScore = prefs.getInt('highest_score');
+    if (highestScore == null) {
+      await prefs.setInt('highest_score', currentScore.value);
+    } else if (highestScore! < currentScore.value) {
+      await prefs.setInt('highest_score', currentScore.value);
     }
-    _gameComponents.clear();
-    overlays.clear();
-    isGamePaused.value = false;
-    _initializeGame();
+    overlays.add('GameOverMenu');
   }
 
   void pauseGame() {
@@ -187,5 +189,16 @@ class MyGame extends FlameGame
   void startGame() {
     overlays.remove('MainMenu');
     (decorator as PaintDecorator).addBlur(0);
+  }
+
+  void resetGame() {
+    FlameAudio.bgm.stop();
+    for (var child in world.children) {
+      child.removeFromParent();
+    }
+    _gameComponents.clear();
+    overlays.clear();
+    isGamePaused.value = false;
+    _initializeGame();
   }
 }

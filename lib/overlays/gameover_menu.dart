@@ -9,7 +9,7 @@ class GameOverMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => game.gameOver(),
+      onTap: () => game.resetGame(),
       child: Material(
         color: Colors.black,
         child: Center(
@@ -19,7 +19,16 @@ class GameOverMenu extends StatelessWidget {
               Text(
                 'Score: ${game.currentScore.value.toString()}',
                 style: const TextStyle(
-                  fontSize: 36,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  shadows: [Shadow(blurRadius: 4, color: Colors.black)],
+                ),
+              ),
+              const SizedBox(width: 10), // Add spacing between the children
+              Text(
+                'Highest Score: ${game.highestScore!.toString()}',
+                style: const TextStyle(
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   shadows: [Shadow(blurRadius: 4, color: Colors.black)],
                 ),
@@ -28,7 +37,7 @@ class GameOverMenu extends StatelessWidget {
               const Text(
                 'Game Over',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
                 ),
               ),
