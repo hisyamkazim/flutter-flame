@@ -1,6 +1,7 @@
 // ignore_for_file: unused_import
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
@@ -42,6 +43,7 @@ class MyGame extends FlameGame
 
   @override
   Future<void> onLoad() async {
+    debugMode = true;
     await super.onLoad();
     decorator = PaintDecorator.blur(0);
     FlameAudio.bgm.initialize();
@@ -63,7 +65,8 @@ class MyGame extends FlameGame
     final playerY = myPlayer.position.y;
     if (playerY < cameraY) {
       camera.viewfinder.position = myPlayer.position;
-    } else if (playerY > (cameraY + camera.visibleWorldRect.height)) {
+    } else if (playerY > (cameraY + camera.visibleWorldRect.height) &&
+        overlays.activeOverlays.isEmpty) {
       gameOver();
     }
 
@@ -77,7 +80,7 @@ class MyGame extends FlameGame
   }
 
   void _initializeGame() {
-    overlays.add('MainMenu');
+    overlays.add('MainMenu', priority: 1);
     (decorator as PaintDecorator).addBlur(10);
     currentScore.value = 0;
     world.add(ground);
@@ -94,34 +97,51 @@ class MyGame extends FlameGame
   }
 
   void _generateGameComponents(Vector2 generateFromPosition) {
-    _addComponentToTheGame(
-        ColorSwitcher(position: generateFromPosition + Vector2(0, 180)));
-    _addComponentToTheGame(CircleRotator(
-        position: generateFromPosition + Vector2.zero(),
-        size: Vector2.all(200)));
-    _addComponentToTheGame(
-        StarComponent(position: generateFromPosition + Vector2.zero()));
+    final random = Random();
 
-    generateFromPosition -= Vector2(0, 370);
-    _addComponentToTheGame(
-        ColorSwitcher(position: generateFromPosition + Vector2(0, 180)));
-    _addComponentToTheGame(CircleRotator(
-        position: generateFromPosition + Vector2.zero(),
-        size: Vector2.all(200)));
-    _addComponentToTheGame(
-        StarComponent(position: generateFromPosition + Vector2.zero()));
+    // Generate random offsets for positioning
+    final colorSwitcherOffset = Vector2(
+        0,
+        random.nextInt(100).toDouble() +
+            100); // Random Y offset between 100 and 200
+    final circleRotatorOffset = Vector2(
+        0,
+        random.nextInt(200).toDouble() +
+            300); // Random Y offset between 300 and 500
+    final multiRotatorCount = random.nextInt(3) + 1;
+    final bufferOffset = Vector2(0, -150);
 
-    generateFromPosition -= Vector2(0, 240);
-    _addComponentToTheGame(
-        ColorSwitcher(position: generateFromPosition + Vector2(0, -200)));
+    // Add ColorSwitcher
+    _addComponentToTheGame(ColorSwitcher(
+        position: generateFromPosition + colorSwitcherOffset * -1));
+
+    // // Add CircleRotator (first one)
     _addComponentToTheGame(CircleRotator(
-        position: generateFromPosition + Vector2(0, -400),
-        size: Vector2.all(150)));
-    _addComponentToTheGame(CircleRotator(
-        position: generateFromPosition + Vector2(0, -400),
-        size: Vector2.all(180)));
-    _addComponentToTheGame(
-        StarComponent(position: generateFromPosition + Vector2(0, -400)));
+        position: generateFromPosition + circleRotatorOffset * -1,
+        size: Vector2.all(200)));
+
+    // // Add StarComponent (in the middle of CircleRotator)
+    _addComponentToTheGame(StarComponent(
+        position: generateFromPosition + circleRotatorOffset * -1));
+
+    makeMultiRotator(
+            multiRotatorCount,
+            generateFromPosition +
+                circleRotatorOffset * -1 +
+                Vector2(0, -(multiRotatorCount * 200).toDouble()) +
+                bufferOffset,
+            Vector2.all((multiRotatorCount * 200).toDouble()))
+        .forEach(_addComponentToTheGame);
+
+    _addComponentToTheGame(StarComponent(
+        position: generateFromPosition +
+            circleRotatorOffset * -1 +
+            Vector2(0, -(multiRotatorCount * 200).toDouble()) +
+            bufferOffset));
+
+    // // Adjust the next generation position
+    generateFromPosition -= Vector2(0,
+        (400 + random.nextInt(200).toDouble())); // Random gap between batches
   }
 
   Future<void> gameOver() async {
@@ -197,8 +217,17 @@ class MyGame extends FlameGame
       child.removeFromParent();
     }
     _gameComponents.clear();
-    overlays.clear();
+    overlays.remove('GameOverMenu');
     isGamePaused.value = false;
     _initializeGame();
+  }
+
+  List<CircleRotator> makeMultiRotator(int n, Vector2 position, Vector2 size) {
+    final List<CircleRotator> multiRotator = [];
+    for (int i = 1; i <= n; i++) {
+      multiRotator.add(CircleRotator(position: position, size: size));
+      size.sub(Vector2.all(30));
+    }
+    return multiRotator;
   }
 }
