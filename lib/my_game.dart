@@ -7,6 +7,7 @@ import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/rendering.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_circle/circle_rotator.dart';
 import 'package:infinite_circle/color_switcher.dart';
@@ -43,7 +44,7 @@ class MyGame extends FlameGame
 
   @override
   Future<void> onLoad() async {
-    debugMode = true;
+    debugMode = kDebugMode; //enables debug mode only when building on debug
     await super.onLoad();
     decorator = PaintDecorator.blur(0);
     FlameAudio.bgm.initialize();
