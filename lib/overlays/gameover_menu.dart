@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:infinite_circle/my_game.dart';
+import 'package:infinite_circle/riverpod.dart';
 
-class GameOverMenu extends StatelessWidget {
+class GameOverMenu extends ConsumerWidget {
   final MyGame game;
 
   const GameOverMenu({super.key, required this.game});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () => game.resetGame(),
       child: Material(
@@ -17,7 +19,7 @@ class GameOverMenu extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Score: ${game.currentScore.value.toString()}',
+                'Score: ${ref.watch(scoreProvider).toString()}',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

@@ -7,15 +7,17 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/rendering.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_circle/circle_rotator.dart';
 import 'package:infinite_circle/color_switcher.dart';
 import 'package:infinite_circle/ground.dart';
 import 'package:infinite_circle/my_game.dart';
+import 'package:infinite_circle/riverpod.dart';
 import 'package:infinite_circle/star_component.dart';
 
 class Player extends PositionComponent
-    with HasGameReference<MyGame>, CollisionCallbacks {
+    with HasGameReference<MyGame>, CollisionCallbacks, RiverpodComponentMixin {
   Player({this.playerRadius = 12, required super.position})
       : super(priority: 20);
 
@@ -79,7 +81,7 @@ class Player extends PositionComponent
       _changeColorRandomly();
     } else if (other is CircleArc) {
       if (_color != other.color) {
-        game.isGamePaused.value = true;
+        ref.read(pauseStateProvider.notifier).toggle();
         game.gameOver();
       }
     } else if (other is StarComponent) {

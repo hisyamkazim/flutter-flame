@@ -7,6 +7,7 @@ import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/rendering.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_circle/circle_rotator.dart';
@@ -15,18 +16,24 @@ import 'package:infinite_circle/ground.dart';
 import 'package:infinite_circle/player.dart';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
+import 'package:infinite_circle/riverpod.dart';
 import 'package:infinite_circle/star_component.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyGame extends FlameGame
-    with TapCallbacks, HasCollisionDetection, HasDecorator, HasTimeScale {
+    with
+        TapCallbacks,
+        HasCollisionDetection,
+        HasDecorator,
+        HasTimeScale,
+        RiverpodGameMixin {
   late Player myPlayer;
   final Ground ground = Ground(position: Vector2(0, 400));
-  final ValueNotifier<int> currentScore = ValueNotifier(0);
-  final ValueNotifier<bool> isGamePaused = ValueNotifier(false);
   final List<Color> gameColors;
   final List<PositionComponent> _gameComponents = [];
-  late int? highestScore;
+  late final highestScore;
+  late final currentScore;
 
   MyGame(
       {this.gameColors = const [
@@ -46,6 +53,9 @@ class MyGame extends FlameGame
   Future<void> onLoad() async {
     debugMode = kDebugMode; //enables debug mode only when building on debug
     await super.onLoad();
+    highestScore = ref.watch(highestScoreProvider);
+    currentScore = ref.watch(scoreProvider);
+
     decorator = PaintDecorator.blur(0);
     FlameAudio.bgm.initialize();
     await Flame.images
@@ -60,14 +70,19 @@ class MyGame extends FlameGame
     super.onMount();
   }
 
+  bool isGameOverTriggered = false;
+
   @override
   void update(double dt) {
     final cameraY = camera.viewfinder.position.y;
     final playerY = myPlayer.position.y;
+
     if (playerY < cameraY) {
       camera.viewfinder.position = myPlayer.position;
     } else if (playerY > (cameraY + camera.visibleWorldRect.height) &&
-        overlays.activeOverlays.isEmpty) {
+        overlays.activeOverlays.isEmpty &&
+        !isGameOverTriggered) {
+      isGameOverTriggered = true; // Prevent multiple triggers
       gameOver();
     }
 
@@ -83,7 +98,7 @@ class MyGame extends FlameGame
   void _initializeGame() {
     overlays.add('MainMenu', priority: 1);
     (decorator as PaintDecorator).addBlur(10);
-    currentScore.value = 0;
+    ref.read(scoreProvider.notifier).reset();
     world.add(ground);
     world.add(myPlayer = Player(position: Vector2(0, 250)));
     camera.moveTo(Vector2.zero());
@@ -146,18 +161,18 @@ class MyGame extends FlameGame
   }
 
   Future<void> gameOver() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    highestScore = prefs.getInt('highest_score');
-    if (highestScore == null) {
-      await prefs.setInt('highest_score', currentScore.value);
-    } else if (highestScore! < currentScore.value) {
-      await prefs.setInt('highest_score', currentScore.value);
+    if (highestScore < currentScore) {
+      ref.read(highestScoreProvider.notifier).newHighScore(currentScore);
     }
-    overlays.add('GameOverMenu');
+
+    // Defer overlay modification
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      overlays.add('GameOverMenu');
+    });
   }
 
   void pauseGame() {
-    isGamePaused.value = true;
+    ref.read(pauseStateProvider.notifier).toggle();
     FlameAudio.bgm.pause();
     (decorator as PaintDecorator).addBlur(10);
     timeScale = 0.0;
@@ -165,15 +180,17 @@ class MyGame extends FlameGame
   }
 
   void resumeGame() {
-    isGamePaused.value = false;
-    FlameAudio.bgm.resume();
-    (decorator as PaintDecorator).addBlur(0);
-    timeScale = 1.0;
-    overlays.remove('PauseMenu');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(pauseStateProvider.notifier).toggle();
+      FlameAudio.bgm.resume();
+      (decorator as PaintDecorator).addBlur(0);
+      timeScale = 1.0;
+      overlays.remove('PauseMenu');
+    });
   }
 
   void increaseScore() {
-    currentScore.value++;
+    ref.read(scoreProvider.notifier).increment();
   }
 
   void checkToGenerateNextBatch(StarComponent starComponent) {
@@ -208,6 +225,7 @@ class MyGame extends FlameGame
   }
 
   void startGame() {
+    ref.read(pauseStateProvider.notifier).toggle();
     overlays.remove('MainMenu');
     (decorator as PaintDecorator).addBlur(0);
   }
@@ -219,7 +237,7 @@ class MyGame extends FlameGame
     }
     _gameComponents.clear();
     overlays.remove('GameOverMenu');
-    isGamePaused.value = false;
+    ref.read(pauseStateProvider.notifier).toggle();
     _initializeGame();
   }
 

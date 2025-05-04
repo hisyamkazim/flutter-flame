@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
 
-class Ground extends PositionComponent {
+class Ground extends PositionComponent with RiverpodComponentMixin {
   static const String keyName = 'single_ground_key';
   Ground({required super.position})
       : super(

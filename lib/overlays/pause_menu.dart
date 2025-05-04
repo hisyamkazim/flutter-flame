@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:infinite_circle/my_game.dart';
 
-class PauseMenu extends StatelessWidget {
+class PauseMenu extends ConsumerWidget {
   final MyGame game;
   const PauseMenu({super.key, required this.game});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
       child: Container(
         color: Colors.black45,

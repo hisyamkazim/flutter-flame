@@ -1,12 +1,13 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'dart:ui';
 import 'dart:math' as math;
 
 import 'package:infinite_circle/my_game.dart';
 
 class ColorSwitcher extends PositionComponent
-    with HasGameReference<MyGame>, CollisionCallbacks {
+    with HasGameReference<MyGame>, CollisionCallbacks, RiverpodComponentMixin {
   final double radius;
   final _arcPaint = Paint();
 

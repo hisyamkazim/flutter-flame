@@ -3,9 +3,10 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/particles.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
 
-class StarComponent extends PositionComponent {
+class StarComponent extends PositionComponent with RiverpodComponentMixin {
   late Sprite _starSprite;
   final _particlePaint = Paint();
 

@@ -1,11 +1,13 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_circle/my_game.dart';
 import 'dart:math' as math;
 
-class CircleRotator extends PositionComponent with HasGameReference<MyGame> {
+class CircleRotator extends PositionComponent
+    with HasGameReference<MyGame>, RiverpodComponentMixin {
   CircleRotator(
       {required super.position,
       required super.size,
@@ -32,7 +34,8 @@ class CircleRotator extends PositionComponent with HasGameReference<MyGame> {
   }
 }
 
-class CircleArc extends PositionComponent with ParentIsA<CircleRotator> {
+class CircleArc extends PositionComponent
+    with ParentIsA<CircleRotator>, RiverpodComponentMixin {
   final Color color;
   final double startAngle;
   final double sweepAngle;
