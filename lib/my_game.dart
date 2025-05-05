@@ -167,6 +167,8 @@ class MyGame extends FlameGame
 
     // Defer overlay modification
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(pauseStateProvider.notifier).toggle();
+
       overlays.add('GameOverMenu');
     });
   }

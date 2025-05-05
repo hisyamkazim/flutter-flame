@@ -28,7 +28,7 @@ class GameOverMenu extends ConsumerWidget {
               ),
               const SizedBox(width: 10), // Add spacing between the children
               Text(
-                'Highest Score: ${game.highestScore!.toString()}',
+                'Highest Score: ${ref.watch(highestScoreProvider).toString()}',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

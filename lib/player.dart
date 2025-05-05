@@ -81,7 +81,6 @@ class Player extends PositionComponent
       _changeColorRandomly();
     } else if (other is CircleArc) {
       if (_color != other.color) {
-        ref.read(pauseStateProvider.notifier).toggle();
         game.gameOver();
       }
     } else if (other is StarComponent) {
