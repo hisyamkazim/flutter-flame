@@ -45,7 +45,6 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isPaused = ref.watch(pauseStateProvider);
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: RiverpodAwareGameWidget(
