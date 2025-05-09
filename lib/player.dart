@@ -11,6 +11,8 @@ import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_circle/circle_rotator.dart';
 import 'package:infinite_circle/color_switcher.dart';
+import 'package:infinite_circle/constant/assets.dart';
+import 'package:infinite_circle/constant/keys.dart';
 import 'package:infinite_circle/ground.dart';
 import 'package:infinite_circle/my_game.dart';
 import 'package:infinite_circle/riverpod.dart';
@@ -50,7 +52,7 @@ class Player extends PositionComponent
     super.update(dt);
     position += _velocity * dt;
 
-    Ground ground = game.findByKeyName(Ground.keyName)!;
+    Ground ground = game.findByKeyName(groundKeyName)!;
     if (positionOfAnchor(Anchor.bottomCenter).y > ground.position.y) {
       _velocity.setZero();
       position.setValues(0, ground.position.y - (height / 2));
@@ -86,7 +88,7 @@ class Player extends PositionComponent
     } else if (other is StarComponent) {
       other.showCollectEffect();
       game.increaseScore();
-      FlameAudio.play('collect.wav');
+      FlameAudio.play(collectSoundPath);
       game.checkToGenerateNextBatch(other);
     }
   }

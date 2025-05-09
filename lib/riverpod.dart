@@ -1,3 +1,4 @@
+import 'package:infinite_circle/constant/keys.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,9 +16,9 @@ class HighestScore extends _$HighestScore {
   @override
   int build() {
     final preferences = ref.watch(sharedPreferencesProvider);
-    final currentValue = preferences.getInt('highest_score') ?? 0;
+    final currentValue = preferences.getInt(highScoreKey) ?? 0;
     listenSelf((prev, next) {
-      preferences.setInt('highest_score', next);
+      preferences.setInt(highScoreKey, next);
     });
     return currentValue;
   }

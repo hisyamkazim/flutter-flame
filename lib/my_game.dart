@@ -1,4 +1,7 @@
-// ignore_for_file: unused_import
+// Project: infinite_circle
+// File: lib/my_game.dart
+// Created by: Hisyam Kazim
+// Created on: 2025
 
 import 'dart:async';
 import 'dart:math';
@@ -12,6 +15,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_circle/circle_rotator.dart';
 import 'package:infinite_circle/color_switcher.dart';
+import 'package:infinite_circle/constant/assets.dart';
+import 'package:infinite_circle/constant/keys.dart';
+import 'package:infinite_circle/constant/timescale.dart';
 import 'package:infinite_circle/ground.dart';
 import 'package:infinite_circle/overlays/hud.dart';
 import 'package:infinite_circle/player.dart';
@@ -19,8 +25,6 @@ import 'package:flame/game.dart';
 import 'package:flame/events.dart';
 import 'package:infinite_circle/riverpod.dart';
 import 'package:infinite_circle/star_component.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MyGame extends FlameGame
     with
@@ -57,9 +61,8 @@ class MyGame extends FlameGame
 
     decorator = PaintDecorator.blur(0);
     FlameAudio.bgm.initialize();
-    await Flame.images
-        .loadAll(['star_icon_white.png', '315851_finger_tap_icon.png']);
-    await FlameAudio.audioCache.loadAll(['collect.wav', 'soundtrack.mp3']);
+    await Flame.images.loadAll([starPath, groundPath]);
+    await FlameAudio.audioCache.loadAll([collectSoundPath, soundtrackPath]);
   }
 
   @override
@@ -95,7 +98,7 @@ class MyGame extends FlameGame
   }
 
   void _initializeGame() {
-    overlays.add('MainMenu', priority: 1);
+    overlays.add(mainMenuRoute, priority: 1);
     camera.viewport.add(Hud());
     (decorator as PaintDecorator).addBlur(10);
     ref.read(scoreProvider.notifier).reset();
@@ -104,7 +107,7 @@ class MyGame extends FlameGame
     camera.moveTo(Vector2.zero());
     _generateGameComponents(Vector2(0, 20));
 
-    FlameAudio.bgm.play('soundtrack.mp3');
+    FlameAudio.bgm.play(soundtrackPath);
   }
 
   void _addComponentToTheGame(PositionComponent component) {
@@ -170,7 +173,7 @@ class MyGame extends FlameGame
           .setHighestScore(value: currentScore);
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      overlays.add('GameOverMenu');
+      overlays.add(gameOverMenuRoute);
     });
   }
 
@@ -178,8 +181,8 @@ class MyGame extends FlameGame
     ref.read(pauseStateProvider.notifier).toggle();
     FlameAudio.bgm.pause();
     (decorator as PaintDecorator).addBlur(10);
-    timeScale = 0.0;
-    overlays.add('PauseMenu');
+    timeScale = Timescale.pause.value;
+    overlays.add(pauseMenuRoute);
   }
 
   void resumeGame() {
@@ -187,8 +190,8 @@ class MyGame extends FlameGame
       ref.read(pauseStateProvider.notifier).toggle();
       FlameAudio.bgm.resume();
       (decorator as PaintDecorator).addBlur(0);
-      timeScale = 1.0;
-      overlays.remove('PauseMenu');
+      timeScale = Timescale.normal.value;
+      overlays.remove(pauseMenuRoute);
     });
   }
 
@@ -230,7 +233,7 @@ class MyGame extends FlameGame
   void startGame() {
     ref.read(pauseStateProvider.notifier).toggle();
     if (!(ref.watch(pauseStateProvider))) {
-      overlays.remove('MainMenu');
+      overlays.remove(mainMenuRoute);
       (decorator as PaintDecorator).addBlur(0);
     }
   }
@@ -242,7 +245,7 @@ class MyGame extends FlameGame
       child.removeFromParent();
     }
     _gameComponents.clear();
-    overlays.remove('GameOverMenu');
+    overlays.remove(gameOverMenuRoute);
     _initializeGame();
   }
 

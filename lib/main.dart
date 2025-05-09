@@ -1,6 +1,13 @@
+// Project: infinite_circle
+// File: lib/main.dart
+// Created by: Hisyam Kazim
+// Created on: 2025
+
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:infinite_circle/constant/keys.dart';
 import 'package:infinite_circle/my_game.dart';
 import 'package:infinite_circle/overlays/gameover_menu.dart';
 import 'package:infinite_circle/overlays/main_menu.dart';
@@ -38,9 +45,23 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  late final AppLifecycleListener _listener;
+
   @override
   void initState() {
     super.initState();
+    // Initialize the AppLifecycleListener
+    _listener = AppLifecycleListener(
+      onHide: () => _myGame.pauseGame(),
+      onPause: () => _myGame.pauseGame(),
+      onInactive: () => _myGame.pauseGame(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _listener.dispose();
+    super.dispose();
   }
 
   @override
@@ -51,9 +72,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         key: gameWidgetKey,
         game: _myGame,
         overlayBuilderMap: {
-          'MainMenu': (_, MyGame game) => MainMenu(game: game),
-          'PauseMenu': (_, MyGame game) => PauseMenu(game: game),
-          'GameOverMenu': (_, MyGame game) => GameOverMenu(game: game),
+          mainMenuRoute: (_, MyGame game) => MainMenu(game: game),
+          pauseMenuRoute: (_, MyGame game) => PauseMenu(game: game),
+          gameOverMenuRoute: (_, MyGame game) => GameOverMenu(game: game),
         },
       ),
     );
