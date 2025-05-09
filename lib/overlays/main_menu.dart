@@ -55,6 +55,7 @@ class MainMenu extends StatelessWidget {
               const SizedBox(height: 20),
               const Text(
                 '''Tap to jump.
+Make sure to go into the right color.
 Collect as many stars as you can!''',
                 textAlign: TextAlign.center,
                 style: TextStyle(

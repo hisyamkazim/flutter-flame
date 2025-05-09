@@ -18,29 +18,29 @@ class GameOverMenu extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Score: ${ref.watch(scoreProvider).toString()}',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  shadows: [Shadow(blurRadius: 4, color: Colors.black)],
-                ),
-              ),
-              const SizedBox(width: 10), // Add spacing between the children
-              Text(
-                'Highest Score: ${ref.watch(highestScoreProvider).toString()}',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  shadows: [Shadow(blurRadius: 4, color: Colors.black)],
-                ),
-              ),
-              const SizedBox(width: 10), // Add spacing between the children
               const Text(
                 'Game Over',
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10), // Add spacing between the children
+              Text(
+                'Score: ${ref.watch(scoreProvider).toString()}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  shadows: [Shadow(blurRadius: 4, color: Colors.black)],
+                ),
+              ),
+              const SizedBox(height: 10), // Add spacing between the children
+              Text(
+                'Highest Score: ${ref.watch(highestScoreProvider).toString()}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  shadows: [Shadow(blurRadius: 4, color: Colors.black)],
                 ),
               ),
             ],

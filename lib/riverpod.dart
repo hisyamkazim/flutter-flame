@@ -3,48 +3,27 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 part 'riverpod.g.dart';
 
-@riverpod
-Future<SharedPreferences> sharedPrefs(_) async =>
-    await SharedPreferences.getInstance();
-
 ///Shares Preferences Provider
 @riverpod
 SharedPreferences sharedPreferences(ref) {
   throw UnimplementedError('SharedPreferences must be initialized before use.');
 }
 
-@Riverpod(keepAlive: true)
-class SharedUtility extends _$SharedUtility {
-  late final SharedPreferences sharedPreferences;
-
-  @override
-  void build() {
-    sharedPreferences = ref.watch(sharedPreferencesProvider);
-  }
-
-  int getHighestScore() {
-    return sharedPreferences.getInt('highest_score') ?? 0;
-  }
-
-  void setHighestScore({required int value}) {
-    sharedPreferences.setInt('highest_score', value);
-  }
-}
-
 ///Highest Score Provider
-@riverpod
+@Riverpod(keepAlive: true)
 class HighestScore extends _$HighestScore {
-  late final SharedUtility sharedUtility;
-
   @override
   int build() {
-    sharedUtility = ref.watch(sharedUtilityProvider.notifier);
-    return sharedUtility.getHighestScore();
+    final preferences = ref.watch(sharedPreferencesProvider);
+    final currentValue = preferences.getInt('highest_score') ?? 0;
+    listenSelf((prev, next) {
+      preferences.setInt('highest_score', next);
+    });
+    return currentValue;
   }
 
-  void newHighScore(int value) {
-    sharedUtility.setHighestScore(value: value);
-    state = sharedUtility.getHighestScore();
+  void setHighestScore({required int value}) async {
+    state = value;
   }
 }
 
@@ -63,9 +42,7 @@ class Score extends _$Score {
 @riverpod
 class PauseState extends _$PauseState {
   @override
-  bool build() {
-    return true;
-  }
+  bool build() => true;
 
   void toggle() => state = !state;
 }

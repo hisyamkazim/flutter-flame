@@ -11,11 +11,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final sharedPreferences = await SharedPreferences.getInstance();
+  // Get the instance of shared preferences
+  final prefs = await SharedPreferences.getInstance();
 
   runApp(ProviderScope(
     overrides: [
-      sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      // Override the unimplemented provider with the value gotten from the plugin
+      sharedPreferencesProvider.overrideWithValue(prefs),
     ],
     child: MaterialApp(
       home: const HomePage(),
@@ -28,14 +30,14 @@ final GlobalKey<RiverpodAwareGameWidgetState<MyGame>> gameWidgetKey =
     GlobalKey<RiverpodAwareGameWidgetState<MyGame>>();
 final _myGame = MyGame();
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     super.initState();
@@ -43,19 +45,19 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isPaused = ref.watch(pauseStateProvider);
     return Scaffold(
-      body: Stack(children: [
-        RiverpodAwareGameWidget(
-          key: gameWidgetKey,
-          game: _myGame,
-          overlayBuilderMap: {
-            'MainMenu': (_, MyGame game) => MainMenu(game: game),
-            'PauseMenu': (_, MyGame game) => PauseMenu(game: game),
-            'GameOverMenu': (_, MyGame game) => GameOverMenu(game: game),
-          },
-        ),
-        const StatusBar(),
-      ]),
+      extendBodyBehindAppBar: true,
+      body: RiverpodAwareGameWidget(
+        key: gameWidgetKey,
+        game: _myGame,
+        overlayBuilderMap: {
+          'MainMenu': (_, MyGame game) => MainMenu(game: game),
+          'PauseMenu': (_, MyGame game) => PauseMenu(game: game),
+          'GameOverMenu': (_, MyGame game) => GameOverMenu(game: game),
+        },
+      ),
+      // Visibility(visible: !isPaused, child: const StatusBar())
     );
   }
 }
@@ -65,31 +67,27 @@ class StatusBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!ref.watch(pauseStateProvider)) {
-      return SafeArea(
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: IconButton(
-                  onPressed: () => _myGame.pauseGame(),
-                  icon: const Icon(Icons.pause)),
+    return SafeArea(
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: IconButton(
+                onPressed: () => _myGame.pauseGame(),
+                icon: const Icon(Icons.pause)),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Text(
+              'Score: ${ref.watch(scoreProvider).toString()}',
+              style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  shadows: [Shadow(blurRadius: 4, color: Colors.black)]),
             ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Text(
-                'Score: ${ref.watch(scoreProvider).toString()}',
-                style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    shadows: [Shadow(blurRadius: 4, color: Colors.black)]),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_circle/circle_rotator.dart';
 import 'package:infinite_circle/color_switcher.dart';
 import 'package:infinite_circle/ground.dart';
+import 'package:infinite_circle/overlays/hud.dart';
 import 'package:infinite_circle/player.dart';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
@@ -32,8 +33,6 @@ class MyGame extends FlameGame
   final Ground ground = Ground(position: Vector2(0, 400));
   final List<Color> gameColors;
   final List<PositionComponent> _gameComponents = [];
-  late final highestScore;
-  late final currentScore;
 
   MyGame(
       {this.gameColors = const [
@@ -44,17 +43,17 @@ class MyGame extends FlameGame
       ]})
       : super(
             camera:
-                CameraComponent.withFixedResolution(width: 600, height: 1000));
+                CameraComponent.withFixedResolution(width: 600, height: 1200));
 
   @override
   Color backgroundColor() => const Color(0xff222222);
 
   @override
   Future<void> onLoad() async {
+    await Flame.device.fullScreen();
+    await Flame.device.setPortraitUpOnly();
     debugMode = kDebugMode; //enables debug mode only when building on debug
     await super.onLoad();
-    highestScore = ref.watch(highestScoreProvider);
-    currentScore = ref.watch(scoreProvider);
 
     decorator = PaintDecorator.blur(0);
     FlameAudio.bgm.initialize();
@@ -97,6 +96,7 @@ class MyGame extends FlameGame
 
   void _initializeGame() {
     overlays.add('MainMenu', priority: 1);
+    camera.viewport.add(Hud());
     (decorator as PaintDecorator).addBlur(10);
     ref.read(scoreProvider.notifier).reset();
     world.add(ground);
@@ -160,15 +160,16 @@ class MyGame extends FlameGame
         (400 + random.nextInt(200).toDouble())); // Random gap between batches
   }
 
-  Future<void> gameOver() async {
+  void gameOver() {
+    final currentScore = ref.watch(scoreProvider);
+    final highestScore = ref.watch(highestScoreProvider);
+
     if (highestScore < currentScore) {
-      ref.read(highestScoreProvider.notifier).newHighScore(currentScore);
+      ref
+          .read(highestScoreProvider.notifier)
+          .setHighestScore(value: currentScore);
     }
-
-    // Defer overlay modification
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(pauseStateProvider.notifier).toggle();
-
       overlays.add('GameOverMenu');
     });
   }
@@ -228,18 +229,20 @@ class MyGame extends FlameGame
 
   void startGame() {
     ref.read(pauseStateProvider.notifier).toggle();
-    overlays.remove('MainMenu');
-    (decorator as PaintDecorator).addBlur(0);
+    if (!(ref.watch(pauseStateProvider))) {
+      overlays.remove('MainMenu');
+      (decorator as PaintDecorator).addBlur(0);
+    }
   }
 
   void resetGame() {
+    ref.read(pauseStateProvider.notifier).toggle();
     FlameAudio.bgm.stop();
     for (var child in world.children) {
       child.removeFromParent();
     }
     _gameComponents.clear();
     overlays.remove('GameOverMenu');
-    ref.read(pauseStateProvider.notifier).toggle();
     _initializeGame();
   }
 
