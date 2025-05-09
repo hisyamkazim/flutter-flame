@@ -57,37 +57,6 @@ class _HomePageState extends ConsumerState<HomePage> {
           'GameOverMenu': (_, MyGame game) => GameOverMenu(game: game),
         },
       ),
-      // Visibility(visible: !isPaused, child: const StatusBar())
-    );
-  }
-}
-
-class StatusBar extends ConsumerWidget {
-  const StatusBar({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SafeArea(
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: IconButton(
-                onPressed: () => _myGame.pauseGame(),
-                icon: const Icon(Icons.pause)),
-          ),
-          Align(
-            alignment: Alignment.topCenter,
-            child: Text(
-              'Score: ${ref.watch(scoreProvider).toString()}',
-              style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  shadows: [Shadow(blurRadius: 4, color: Colors.black)]),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
