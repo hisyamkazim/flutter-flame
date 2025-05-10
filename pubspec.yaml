@@ -1,7 +1,7 @@
 name: infinite_circle
 description: "Infinite Circle Switch Game"
 publish_to: 'none'
-version: 1.0.0+8
+version: 1.0.0+9
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -14,6 +14,7 @@ dependencies:
     sdk: flutter
   flutter_native_splash: ^2.4.6
   flutter_riverpod: ^2.6.1
+  google_mobile_ads: ^6.0.0
   riverpod_annotation: ^2.6.1
   shared_preferences: ^2.5.3
 

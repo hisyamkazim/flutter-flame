@@ -1,0 +1,2 @@
+/Users/hisyamkazim/Dev/flutter-flame/android/app/.cxx/Debug/3u155r4p/x86/CMakeFiles/edit_cache.dir
+/Users/hisyamkazim/Dev/flutter-flame/android/app/.cxx/Debug/3u155r4p/x86/CMakeFiles/rebuild_cache.dir

@@ -3,10 +3,13 @@
 // Created by: Hisyam Kazim
 // Created on: 2025
 
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:infinite_circle/constant/keys.dart';
 import 'package:infinite_circle/my_game.dart';
 import 'package:infinite_circle/overlays/gameover_menu.dart';
@@ -17,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
 
   // Get the instance of shared preferences
   final prefs = await SharedPreferences.getInstance();
@@ -36,6 +40,7 @@ Future<void> main() async {
 final GlobalKey<RiverpodAwareGameWidgetState<MyGame>> gameWidgetKey =
     GlobalKey<RiverpodAwareGameWidgetState<MyGame>>();
 final _myGame = MyGame();
+const int maxFailedLoadAttempts = 3;
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -46,6 +51,14 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   late final AppLifecycleListener _listener;
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+
+  static const AdRequest request = AdRequest(
+    keywords: <String>['foo', 'bar'],
+    contentUrl: 'http://foo.com/bar.html',
+    nonPersonalizedAds: true,
+  );
 
   @override
   void initState() {
@@ -54,13 +67,14 @@ class _HomePageState extends ConsumerState<HomePage> {
     _listener = AppLifecycleListener(
       onHide: () => _myGame.pauseGame(),
       onPause: () => _myGame.pauseGame(),
-      onInactive: () => _myGame.pauseGame(),
     );
+    _createInterstitialAd();
   }
 
   @override
   void dispose() {
     _listener.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -74,9 +88,62 @@ class _HomePageState extends ConsumerState<HomePage> {
         overlayBuilderMap: {
           mainMenuRoute: (_, MyGame game) => MainMenu(game: game),
           pauseMenuRoute: (_, MyGame game) => PauseMenu(game: game),
-          gameOverMenuRoute: (_, MyGame game) => GameOverMenu(game: game),
+          gameOverMenuRoute: (_, MyGame game) =>
+              GameOverMenu(game: game, () => _showInterstitialAd()),
         },
       ),
     );
+  }
+
+  void _createInterstitialAd() {
+    InterstitialAd.load(
+        adUnitId: Platform.isAndroid
+            ? 'ca-app-pub-3940256099942544/1033173712'
+            : 'ca-app-pub-3940256099942544/4411468910',
+        request: request,
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            print('$ad loaded');
+
+            setState(() {
+              _interstitialAd = ad;
+              _numInterstitialLoadAttempts = 0;
+            });
+            _interstitialAd!.setImmersiveMode(true);
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error.');
+            setState(() {
+              _numInterstitialLoadAttempts += 1;
+              _interstitialAd = null;
+            });
+            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              _createInterstitialAd();
+            }
+          },
+        ));
+  }
+
+  void _showInterstitialAd() {
+    if (_interstitialAd == null) {
+      print('Warning: attempt to show interstitial before loaded.');
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('$ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    _interstitialAd = null;
   }
 }

@@ -5,13 +5,17 @@ import 'package:infinite_circle/riverpod.dart';
 
 class GameOverMenu extends ConsumerWidget {
   final MyGame game;
+  final VoidCallback _showInterstitialAd;
 
-  const GameOverMenu({super.key, required this.game});
+  const GameOverMenu(this._showInterstitialAd, {super.key, required this.game});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onTap: () => game.resetGame(),
+      onTap: () {
+        game.resetGame();
+        _showInterstitialAd();
+      },
       child: Material(
         color: Colors.black,
         child: Center(
