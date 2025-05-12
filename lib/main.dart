@@ -4,7 +4,6 @@
 // Created on: 2025
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,9 @@ import 'package:infinite_circle/my_game.dart';
 import 'package:infinite_circle/overlays/gameover_menu.dart';
 import 'package:infinite_circle/overlays/main_menu.dart';
 import 'package:infinite_circle/overlays/pause_menu.dart';
+import 'package:infinite_circle/overlays/record_menu.dart';
 import 'package:infinite_circle/riverpod.dart';
+import 'package:pixelarticons/pixel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -82,24 +83,53 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      body: RiverpodAwareGameWidget(
-        key: gameWidgetKey,
-        game: _myGame,
-        overlayBuilderMap: {
-          mainMenuRoute: (_, MyGame game) => MainMenu(game: game),
-          pauseMenuRoute: (_, MyGame game) => PauseMenu(game: game),
-          gameOverMenuRoute: (_, MyGame game) =>
-              GameOverMenu(game: game, () => _showInterstitialAd()),
-        },
+      body: Stack(
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: RiverpodAwareGameWidget(
+              key: gameWidgetKey,
+              game: _myGame,
+              overlayBuilderMap: {
+                mainMenuRoute: (_, MyGame game) => MainMenu(game: game),
+                pauseMenuRoute: (_, MyGame game) => PauseMenu(game: game),
+                gameOverMenuRoute: (_, MyGame game) =>
+                    GameOverMenu(game: game, () => _showInterstitialAd()),
+                recordMenuRoute: (_, MyGame game) => RecordMenu(game: game),
+              },
+            ),
+          ),
+          Visibility(
+            visible: !ref.watch(pauseStateProvider),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: IconButton(
+                      tooltip: 'Pause',
+                      onPressed: () => _myGame.pauseGame(),
+                      icon: const Icon(Pixel.pause))),
+            ),
+          ),
+          Visibility(
+            visible: !ref.watch(pauseStateProvider),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: IconButton(
+                      onPressed: () => _myGame.resetGame(isRestarting: false),
+                      icon: const Icon(Pixel.home))),
+            ),
+          )
+        ],
       ),
     );
   }
 
   void _createInterstitialAd() {
     InterstitialAd.load(
-        adUnitId: Platform.isAndroid
-            ? 'ca-app-pub-3940256099942544/1033173712'
-            : 'ca-app-pub-3940256099942544/4411468910',
+        adUnitId: 'ca-app-pub-3940256099942544/1033173712',
         request: request,
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (InterstitialAd ad) {

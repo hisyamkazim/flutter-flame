@@ -24,6 +24,6 @@ class Ground extends PositionComponent with RiverpodComponentMixin {
   @override
   void render(Canvas canvas) {
     fingerSprite.render(canvas,
-        size: Vector2.all(100), position: Vector2(56, 0));
+        size: Vector2.all(100), position: Vector2(50, -10));
   }
 }

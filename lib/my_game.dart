@@ -57,6 +57,7 @@ class MyGame extends FlameGame
     await Flame.device.fullScreen();
     await Flame.device.setPortraitUpOnly();
     debugMode = kDebugMode; //enables debug mode only when building on debug
+
     await super.onLoad();
 
     decorator = PaintDecorator.blur(0);
@@ -67,7 +68,7 @@ class MyGame extends FlameGame
 
   @override
   void onMount() {
-    _initializeGame();
+    _initializeGame(isRestarting: false);
 
     super.onMount();
   }
@@ -97,10 +98,14 @@ class MyGame extends FlameGame
     super.onTapDown(event);
   }
 
-  void _initializeGame() {
-    overlays.add(mainMenuRoute, priority: 1);
+  void _initializeGame({required bool isRestarting}) {
+    if (!isRestarting) {
+      overlays.toggle(mainMenuRoute, priority: 1);
+      (decorator as PaintDecorator).addBlur(10);
+    } else {
+      ref.read(pauseStateProvider.notifier).show();
+    }
     camera.viewport.add(Hud());
-    (decorator as PaintDecorator).addBlur(10);
     ref.read(scoreProvider.notifier).reset();
     world.add(ground);
     world.add(myPlayer = Player(position: Vector2(0, 250)));
@@ -172,26 +177,28 @@ class MyGame extends FlameGame
           .read(highestScoreProvider.notifier)
           .setHighestScore(value: currentScore);
     }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(pauseStateProvider.notifier).hide();
       overlays.add(gameOverMenuRoute);
     });
   }
 
   void pauseGame() {
-    ref.read(pauseStateProvider.notifier).toggle();
+    ref.read(pauseStateProvider.notifier).hide();
     FlameAudio.bgm.pause();
     (decorator as PaintDecorator).addBlur(10);
     timeScale = Timescale.pause.value;
-    overlays.add(pauseMenuRoute);
+    overlays.toggle(pauseMenuRoute);
   }
 
   void resumeGame() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(pauseStateProvider.notifier).toggle();
+      ref.read(pauseStateProvider.notifier).show();
       FlameAudio.bgm.resume();
       (decorator as PaintDecorator).addBlur(0);
       timeScale = Timescale.normal.value;
-      overlays.remove(pauseMenuRoute);
+      overlays.toggle(pauseMenuRoute);
     });
   }
 
@@ -231,22 +238,21 @@ class MyGame extends FlameGame
   }
 
   void startGame() {
-    ref.read(pauseStateProvider.notifier).toggle();
+    ref.read(pauseStateProvider.notifier).show();
     if (!(ref.watch(pauseStateProvider))) {
-      overlays.remove(mainMenuRoute);
+      overlays.toggle(mainMenuRoute);
       (decorator as PaintDecorator).addBlur(0);
     }
   }
 
-  void resetGame() {
-    ref.read(pauseStateProvider.notifier).toggle();
+  void resetGame({required bool isRestarting}) {
     FlameAudio.bgm.stop();
     for (var child in world.children) {
       child.removeFromParent();
     }
     _gameComponents.clear();
     overlays.remove(gameOverMenuRoute);
-    _initializeGame();
+    _initializeGame(isRestarting: isRestarting);
   }
 
   List<CircleRotator> makeMultiRotator(int n, Vector2 position, Vector2 size) {
@@ -257,4 +263,8 @@ class MyGame extends FlameGame
     }
     return multiRotator;
   }
+
+  void goToMainMenu() {}
+
+  void goToRecordMenu() {}
 }

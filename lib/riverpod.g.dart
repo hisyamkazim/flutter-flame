@@ -26,7 +26,7 @@ final sharedPreferencesProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SharedPreferencesRef = AutoDisposeProviderRef<SharedPreferences>;
-String _$highestScoreHash() => r'ce5e3572b59a38c82afbbe5104d2685e61f32bd7';
+String _$highestScoreHash() => r'f264cbd96db30901f5669aef1e9d8a9971bda4ac';
 
 ///Highest Score Provider
 ///
@@ -58,14 +58,13 @@ final scoreProvider = NotifierProvider<Score, int>.internal(
 );
 
 typedef _$Score = Notifier<int>;
-String _$pauseStateHash() => r'24cc2558fd070b3641c70d9bcfdc99be8eb9fd70';
+String _$pauseStateHash() => r'aaf435339375db97203a0f3ebe6a4c411d8ca6c5';
 
 ///Pause State Provider
 ///
 /// Copied from [PauseState].
 @ProviderFor(PauseState)
-final pauseStateProvider =
-    AutoDisposeNotifierProvider<PauseState, bool>.internal(
+final pauseStateProvider = NotifierProvider<PauseState, bool>.internal(
   PauseState.new,
   name: r'pauseStateProvider',
   debugGetCreateSourceHash:
@@ -74,6 +73,23 @@ final pauseStateProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$PauseState = AutoDisposeNotifier<bool>;
+typedef _$PauseState = Notifier<bool>;
+String _$attemptCounterHash() => r'e527418165d423a8cd76ba7f2e3444f97047783e';
+
+///Retry State Provider
+///
+/// Copied from [AttemptCounter].
+@ProviderFor(AttemptCounter)
+final attemptCounterProvider = NotifierProvider<AttemptCounter, int>.internal(
+  AttemptCounter.new,
+  name: r'attemptCounterProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$attemptCounterHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$AttemptCounter = Notifier<int>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

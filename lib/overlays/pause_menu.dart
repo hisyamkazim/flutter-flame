@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:infinite_circle/my_game.dart';
+import 'package:pixelarticons/pixel.dart';
 
 class PauseMenu extends ConsumerWidget {
   final MyGame game;
@@ -15,9 +17,9 @@ class PauseMenu extends ConsumerWidget {
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'PAUSED!',
-              style: TextStyle(
+              style: GoogleFonts.pixelifySans(
                   color: Colors.white,
                   fontSize: 48,
                   fontWeight: FontWeight.bold),
@@ -29,7 +31,7 @@ class PauseMenu extends ConsumerWidget {
                     onPressed: () {
                       game.resumeGame();
                     },
-                    icon: const Icon(Icons.play_arrow, size: 140)))
+                    icon: const Icon(Pixel.play, size: 140)))
           ],
         )),
       ),
