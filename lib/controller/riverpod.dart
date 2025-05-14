@@ -1,4 +1,6 @@
 import 'package:infinite_circle/constant/keys.dart';
+import 'package:infinite_circle/db/db_helper.dart';
+import 'package:infinite_circle/db/models/scores.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,6 +39,33 @@ class Score extends _$Score {
   void increment() => state++;
 
   void reset() => state = 0;
+}
+
+@Riverpod(keepAlive: true)
+class ScoreHistory extends _$ScoreHistory {
+  @override
+  FutureOr<List<Scores>> build() async {
+    // By default, return all scores ordered by date descending
+    return await DatabaseHelper.instance.getScores()
+      ..removeWhere((item) => item.score == 0);
+  }
+
+  Future<void> addScore(Scores score) async {
+    await DatabaseHelper.instance.insertScore(score);
+    // Refresh the state after inserting
+    state = AsyncValue.data(await DatabaseHelper.instance.getScores()
+      ..removeWhere((item) => item.score == 0));
+  }
+
+  Future<void> fetchScores() async {
+    state = AsyncValue.data(await DatabaseHelper.instance.getScores()
+      ..removeWhere((item) => item.score == 0));
+  }
+
+  Future<void> deleteAllScores() async {
+    await DatabaseHelper.instance.deleteScores();
+    state = const AsyncValue.data([]);
+  }
 }
 
 ///Pause State Provider

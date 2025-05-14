@@ -18,12 +18,13 @@ import 'package:infinite_circle/color_switcher.dart';
 import 'package:infinite_circle/constant/assets.dart';
 import 'package:infinite_circle/constant/keys.dart';
 import 'package:infinite_circle/constant/timescale.dart';
+import 'package:infinite_circle/db/models/scores.dart';
 import 'package:infinite_circle/ground.dart';
 import 'package:infinite_circle/overlays/hud.dart';
 import 'package:infinite_circle/player.dart';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
-import 'package:infinite_circle/riverpod.dart';
+import 'package:infinite_circle/controller/riverpod.dart';
 import 'package:infinite_circle/star_component.dart';
 
 class MyGame extends FlameGame
@@ -69,7 +70,6 @@ class MyGame extends FlameGame
   @override
   void onMount() {
     _initializeGame(isRestarting: false);
-
     super.onMount();
   }
 
@@ -169,6 +169,9 @@ class MyGame extends FlameGame
   }
 
   void gameOver() {
+    if (isGameOverTriggered) return; // Early return if already triggered
+    isGameOverTriggered = true;
+
     final currentScore = ref.watch(scoreProvider);
     final highestScore = ref.watch(highestScoreProvider);
 
@@ -177,6 +180,11 @@ class MyGame extends FlameGame
           .read(highestScoreProvider.notifier)
           .setHighestScore(value: currentScore);
     }
+
+    ref.read(scoreHistoryProvider.notifier).addScore(Scores(
+          score: currentScore,
+          date: DateTime.now(),
+        ));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(pauseStateProvider.notifier).hide();
@@ -251,7 +259,9 @@ class MyGame extends FlameGame
       child.removeFromParent();
     }
     _gameComponents.clear();
-    overlays.remove(gameOverMenuRoute);
+    overlays.removeAll(
+        [mainMenuRoute, pauseMenuRoute, gameOverMenuRoute, recordMenuRoute]);
+    isGameOverTriggered = false;
     _initializeGame(isRestarting: isRestarting);
   }
 
@@ -264,7 +274,18 @@ class MyGame extends FlameGame
     return multiRotator;
   }
 
-  void goToMainMenu() {}
+  void goToRecordMenu() {
+    FlameAudio.bgm.stop();
+    for (var child in world.children) {
+      child.removeFromParent();
+    }
+    print(ref.read(scoreHistoryProvider));
+    _gameComponents.clear();
+    overlays.remove(gameOverMenuRoute);
+    overlays.add(recordMenuRoute);
+  }
 
-  void goToRecordMenu() {}
+  void clearScoreHistory() {
+    ref.read(scoreHistoryProvider.notifier).deleteAllScores();
+  }
 }

@@ -15,7 +15,7 @@ import 'package:infinite_circle/constant/assets.dart';
 import 'package:infinite_circle/constant/keys.dart';
 import 'package:infinite_circle/ground.dart';
 import 'package:infinite_circle/my_game.dart';
-import 'package:infinite_circle/riverpod.dart';
+import 'package:infinite_circle/controller/riverpod.dart';
 import 'package:infinite_circle/star_component.dart';
 
 class Player extends PositionComponent

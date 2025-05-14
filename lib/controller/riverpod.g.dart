@@ -58,6 +58,21 @@ final scoreProvider = NotifierProvider<Score, int>.internal(
 );
 
 typedef _$Score = Notifier<int>;
+String _$scoreHistoryHash() => r'bad65d681c27b60393e15d08f63d37bca732bf4d';
+
+/// See also [ScoreHistory].
+@ProviderFor(ScoreHistory)
+final scoreHistoryProvider =
+    AsyncNotifierProvider<ScoreHistory, List<Scores>>.internal(
+  ScoreHistory.new,
+  name: r'scoreHistoryProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$scoreHistoryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$ScoreHistory = AsyncNotifier<List<Scores>>;
 String _$pauseStateHash() => r'aaf435339375db97203a0f3ebe6a4c411d8ca6c5';
 
 ///Pause State Provider

@@ -10,12 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:infinite_circle/constant/keys.dart';
+import 'package:infinite_circle/db/db_helper.dart';
 import 'package:infinite_circle/my_game.dart';
 import 'package:infinite_circle/overlays/gameover_menu.dart';
 import 'package:infinite_circle/overlays/main_menu.dart';
 import 'package:infinite_circle/overlays/pause_menu.dart';
 import 'package:infinite_circle/overlays/record_menu.dart';
-import 'package:infinite_circle/riverpod.dart';
+import 'package:infinite_circle/controller/riverpod.dart';
 import 'package:pixelarticons/pixel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,6 +26,9 @@ Future<void> main() async {
 
   // Get the instance of shared preferences
   final prefs = await SharedPreferences.getInstance();
+
+  // Initialize the database
+  await DatabaseHelper.instance.database;
 
   runApp(ProviderScope(
     overrides: [
