@@ -287,5 +287,6 @@ class MyGame extends FlameGame
 
   void clearScoreHistory() {
     ref.read(scoreHistoryProvider.notifier).deleteAllScores();
+    ref.read(highestScoreProvider.notifier).setHighestScore(value: 0);
   }
 }
