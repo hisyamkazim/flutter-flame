@@ -12,6 +12,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:infinite_circle/constant/keys.dart';
 import 'package:infinite_circle/db/db_helper.dart';
 import 'package:infinite_circle/my_game.dart';
+import 'package:infinite_circle/overlays/countdown_overlay.dart';
 import 'package:infinite_circle/overlays/gameover_menu.dart';
 import 'package:infinite_circle/overlays/main_menu.dart';
 import 'package:infinite_circle/overlays/pause_menu.dart';
@@ -100,8 +101,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                 gameOverMenuRoute: (_, MyGame game) =>
                     GameOverMenu(game: game, () => _showInterstitialAd()),
                 recordMenuRoute: (_, MyGame game) => RecordMenu(game: game),
-              },
+                countdownRoute: (_, MyGame game) => CountdownOverlay(
+      onCountdownComplete: game.onCountdownComplete
             ),
+              })
           ),
           Visibility(
             visible: !ref.watch(pauseStateProvider),

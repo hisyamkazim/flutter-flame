@@ -77,16 +77,21 @@ class MyGame extends FlameGame
 
   @override
   void update(double dt) {
-    final cameraY = camera.viewfinder.position.y;
-    final playerY = myPlayer.position.y;
+    if (!isGameOverTriggered && overlays.activeOverlays.isEmpty) {
+      final cameraY = camera.viewfinder.position.y;
+      final playerY = myPlayer.position.y;
+      final screenHeight = camera.visibleWorldRect.height;
+      final bottomEdge = (cameraY + screenHeight) / 2;
 
-    if (playerY < cameraY) {
-      camera.viewfinder.position = myPlayer.position;
-    } else if (playerY > (cameraY + camera.visibleWorldRect.height) &&
-        overlays.activeOverlays.isEmpty &&
-        !isGameOverTriggered) {
-      isGameOverTriggered = true; // Prevent multiple triggers
-      gameOver();
+      if (playerY < cameraY) {
+        camera.viewfinder.position = Vector2(0, playerY);
+      }
+
+      // Check if player has fallen below screen
+      if (playerY > bottomEdge - 100) {
+        // Added buffer of 100 to ensure player is fully off screen
+        gameOver();
+      }
     }
 
     super.update(dt);
@@ -103,7 +108,8 @@ class MyGame extends FlameGame
       overlays.toggle(mainMenuRoute, priority: 1);
       (decorator as PaintDecorator).addBlur(10);
     } else {
-      ref.read(pauseStateProvider.notifier).show();
+      overlays.toggle(countdownRoute, priority: 1);
+      (decorator as PaintDecorator).addBlur(10);
     }
     camera.viewport.add(Hud());
     ref.read(scoreProvider.notifier).reset();
@@ -246,11 +252,19 @@ class MyGame extends FlameGame
   }
 
   void startGame() {
+    overlays.remove(mainMenuRoute);
+
+    // Add countdown overlay instead of immediately starting
+    timeScale = Timescale.pause.value; // Pause the game during countdown
+    overlays.add(countdownRoute);
+  }
+
+  // Add this method to handle countdown completion
+  void onCountdownComplete() {
+    overlays.remove(countdownRoute);
+    (decorator as PaintDecorator).addBlur(0);
+    timeScale = Timescale.normal.value;
     ref.read(pauseStateProvider.notifier).show();
-    if (!(ref.watch(pauseStateProvider))) {
-      overlays.toggle(mainMenuRoute);
-      (decorator as PaintDecorator).addBlur(0);
-    }
   }
 
   void resetGame({required bool isRestarting}) {
