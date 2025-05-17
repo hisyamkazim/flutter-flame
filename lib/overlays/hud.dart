@@ -10,7 +10,9 @@ import 'package:infinite_circle/star_component.dart';
 
 class Hud extends PositionComponent
     with HasGameReference<MyGame>, RiverpodComponentMixin {
+  final int? lastValue;
   Hud({
+    required this.lastValue, 
     super.position,
     super.size,
     super.scale,
@@ -22,9 +24,10 @@ class Hud extends PositionComponent
 
   late TextComponent _scoreTextComponent;
   late StarComponent _starComponent;
-  int currentValue = 0;
+  late int currentValue;
   @override
   Future<void> onLoad() async {
+    currentValue = lastValue ?? 0;
     await super.onLoad();
   }
 

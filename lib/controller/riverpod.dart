@@ -39,6 +39,8 @@ class Score extends _$Score {
   void increment() => state++;
 
   void reset() => state = 0;
+
+  void resume({required int value}) => state = value;
 }
 
 @Riverpod(keepAlive: true)

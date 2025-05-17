@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:infinite_circle/constant/game_over.dart';
 import 'package:infinite_circle/my_game.dart';
 import 'package:infinite_circle/controller/riverpod.dart';
 import 'package:lottie/lottie.dart';
@@ -112,7 +113,7 @@ class RecordMenu extends ConsumerWidget {
               spacing: 10,
               children: [
                 IconButton(
-                  onPressed: () => game.resetGame(isRestarting: false),
+                  onPressed: () => game.resetGame(action: GameOver.start),
                   icon: const Icon(Pixel.home),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,

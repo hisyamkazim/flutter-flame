@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_circle/circle_rotator.dart';
 import 'package:infinite_circle/color_switcher.dart';
 import 'package:infinite_circle/constant/assets.dart';
+import 'package:infinite_circle/constant/game_over.dart';
 import 'package:infinite_circle/constant/keys.dart';
 import 'package:infinite_circle/constant/timescale.dart';
 import 'package:infinite_circle/db/models/scores.dart';
@@ -69,7 +70,7 @@ class MyGame extends FlameGame
 
   @override
   void onMount() {
-    _initializeGame(isRestarting: false);
+    _initializeGame(action: GameOver.start);
     super.onMount();
   }
 
@@ -103,21 +104,26 @@ class MyGame extends FlameGame
     super.onTapDown(event);
   }
 
-  void _initializeGame({required bool isRestarting}) {
-    if (!isRestarting) {
-      overlays.toggle(mainMenuRoute, priority: 1);
-      (decorator as PaintDecorator).addBlur(10);
+  void _initializeGame({required GameOver action}) {
+    final lastValue = ref.watch(scoreProvider);
+    overlays.toggle(
+      action == GameOver.start ? mainMenuRoute : countdownRoute,
+      priority: 1,
+    );
+    (decorator as PaintDecorator).addBlur(10);
+
+    if (action != GameOver.resumed) {
+      ref.read(scoreProvider.notifier).reset();
+      camera.viewport.add(Hud(lastValue: null));
     } else {
-      overlays.toggle(countdownRoute, priority: 1);
-      (decorator as PaintDecorator).addBlur(10);
+      ref.read(scoreProvider.notifier).resume(value: lastValue);
+      camera.viewport.add(Hud(lastValue: lastValue));
     }
-    camera.viewport.add(Hud());
-    ref.read(scoreProvider.notifier).reset();
     world.add(ground);
     world.add(myPlayer = Player(position: Vector2(0, 250)));
     camera.moveTo(Vector2.zero());
     _generateGameComponents(Vector2(0, 20));
-
+    ref.read(pauseStateProvider.notifier).hide();
     FlameAudio.bgm.play(soundtrackPath);
   }
 
@@ -267,16 +273,21 @@ class MyGame extends FlameGame
     ref.read(pauseStateProvider.notifier).show();
   }
 
-  void resetGame({required bool isRestarting}) {
+  void resetGame({required GameOver action}) {
     FlameAudio.bgm.stop();
     for (var child in world.children) {
       child.removeFromParent();
     }
     _gameComponents.clear();
-    overlays.removeAll(
-        [mainMenuRoute, pauseMenuRoute, gameOverMenuRoute, recordMenuRoute]);
+    overlays.removeAll([
+      mainMenuRoute,
+      pauseMenuRoute,
+      gameOverMenuRoute,
+      recordMenuRoute,
+      countdownRoute
+    ]);
     isGameOverTriggered = false;
-    _initializeGame(isRestarting: isRestarting);
+    _initializeGame(action: action);
   }
 
   List<CircleRotator> makeMultiRotator(int n, Vector2 position, Vector2 size) {
@@ -302,5 +313,24 @@ class MyGame extends FlameGame
   void clearScoreHistory() {
     ref.read(scoreHistoryProvider.notifier).deleteAllScores();
     ref.read(highestScoreProvider.notifier).setHighestScore(value: 0);
+  }
+
+  void handleAppState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        if (overlays.activeOverlays.isEmpty) {
+          resumeGame();
+        }
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.paused:
+        if (overlays.activeOverlays.isEmpty) {
+          pauseGame();
+        }
+        break;
+      default:
+        break;
+    }
   }
 }

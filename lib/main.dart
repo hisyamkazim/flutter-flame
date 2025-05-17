@@ -9,6 +9,7 @@ import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:infinite_circle/constant/game_over.dart';
 import 'package:infinite_circle/constant/keys.dart';
 import 'package:infinite_circle/db/db_helper.dart';
 import 'package:infinite_circle/my_game.dart';
@@ -60,6 +61,9 @@ class _HomePageState extends ConsumerState<HomePage> {
   InterstitialAd? _interstitialAd;
   int _numInterstitialLoadAttempts = 0;
 
+  RewardedInterstitialAd? _rewardedInterstitialAd;
+  int _numRewardedInterstitialLoadAttempts = 0;
+
   static const AdRequest request = AdRequest(
     keywords: <String>['foo', 'bar'],
     contentUrl: 'http://foo.com/bar.html',
@@ -71,8 +75,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.initState();
     // Initialize the AppLifecycleListener
     _listener = AppLifecycleListener(
-      onHide: () => _myGame.pauseGame(),
-      onPause: () => _myGame.pauseGame(),
+      onStateChange: (state) => _myGame.handleAppState(state),
     );
     _createInterstitialAd();
   }
@@ -91,21 +94,19 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: Stack(
         children: [
           Align(
-            alignment: Alignment.center,
-            child: RiverpodAwareGameWidget(
-              key: gameWidgetKey,
-              game: _myGame,
-              overlayBuilderMap: {
-                mainMenuRoute: (_, MyGame game) => MainMenu(game: game),
-                pauseMenuRoute: (_, MyGame game) => PauseMenu(game: game),
-                gameOverMenuRoute: (_, MyGame game) =>
-                    GameOverMenu(game: game, () => _showInterstitialAd()),
-                recordMenuRoute: (_, MyGame game) => RecordMenu(game: game),
-                countdownRoute: (_, MyGame game) => CountdownOverlay(
-      onCountdownComplete: game.onCountdownComplete
-            ),
-              })
-          ),
+              alignment: Alignment.center,
+              child: RiverpodAwareGameWidget(
+                  key: gameWidgetKey,
+                  game: _myGame,
+                  overlayBuilderMap: {
+                    mainMenuRoute: (_, MyGame game) => MainMenu(game: game),
+                    pauseMenuRoute: (_, MyGame game) => PauseMenu(game: game),
+                    gameOverMenuRoute: (_, MyGame game) =>
+                        GameOverMenu(game: game, () => _showInterstitialAd(), () => _showRewardedInterstitialAd()),
+                    recordMenuRoute: (_, MyGame game) => RecordMenu(game: game),
+                    countdownRoute: (_, MyGame game) => CountdownOverlay(
+                        onCountdownComplete: game.onCountdownComplete),
+                  })),
           Visibility(
             visible: !ref.watch(pauseStateProvider),
             child: Align(
@@ -125,7 +126,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Container(
                   padding: const EdgeInsets.all(10),
                   child: IconButton(
-                      onPressed: () => _myGame.resetGame(isRestarting: false),
+                      onPressed: () => _myGame.resetGame(action: GameOver.start),
                       icon: const Icon(Pixel.home))),
             ),
           )
@@ -182,5 +183,56 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
     _interstitialAd!.show();
     _interstitialAd = null;
+  }
+
+  void _createRewardedInterstitialAd() {
+    RewardedInterstitialAd.load(
+        adUnitId: 'ca-app-pub-3940256099942544/5354046379',
+        request: request,
+        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
+          onAdLoaded: (RewardedInterstitialAd ad) {
+            print('$ad loaded.');
+            _rewardedInterstitialAd = ad;
+            _numRewardedInterstitialLoadAttempts = 0;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('RewardedInterstitialAd failed to load: $error');
+            _rewardedInterstitialAd = null;
+            _numRewardedInterstitialLoadAttempts += 1;
+            if (_numRewardedInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              _createRewardedInterstitialAd();
+            }
+          },
+        ));
+  }
+
+  void _showRewardedInterstitialAd() {
+    if (_rewardedInterstitialAd == null) {
+      print('Warning: attempt to show rewarded interstitial before loaded.');
+      return;
+    }
+    _rewardedInterstitialAd!.fullScreenContentCallback =
+        FullScreenContentCallback(
+      onAdShowedFullScreenContent: (RewardedInterstitialAd ad) =>
+          print('$ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (RewardedInterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createRewardedInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent:
+          (RewardedInterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createRewardedInterstitialAd();
+      },
+    );
+
+    _rewardedInterstitialAd!.setImmersiveMode(true);
+    _rewardedInterstitialAd!.show(
+        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+      print('$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
+    });
+    _rewardedInterstitialAd = null;
   }
 }

@@ -42,7 +42,7 @@ final highestScoreProvider = NotifierProvider<HighestScore, int>.internal(
 );
 
 typedef _$HighestScore = Notifier<int>;
-String _$scoreHash() => r'04a0e81d822cb38ec373c9789c8b279d0dd35d98';
+String _$scoreHash() => r'5943c48c261c4f645efa5c333790f4c50bb87c6a';
 
 ///Score Provider
 ///
@@ -58,7 +58,7 @@ final scoreProvider = NotifierProvider<Score, int>.internal(
 );
 
 typedef _$Score = Notifier<int>;
-String _$scoreHistoryHash() => r'bad65d681c27b60393e15d08f63d37bca732bf4d';
+String _$scoreHistoryHash() => r'7411e4f9bbfb768132e9780b57d6c6cf03620e4a';
 
 /// See also [ScoreHistory].
 @ProviderFor(ScoreHistory)
