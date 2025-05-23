@@ -4,6 +4,7 @@
 // Created on: 2025
 
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -78,12 +79,14 @@ class _HomePageState extends ConsumerState<HomePage> {
       onStateChange: (state) => _myGame.handleAppState(state),
     );
     _createInterstitialAd();
+    _createRewardedInterstitialAd();
   }
 
   @override
   void dispose() {
     _listener.dispose();
     _interstitialAd?.dispose();
+    _rewardedInterstitialAd?.dispose();
     super.dispose();
   }
 
@@ -101,8 +104,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                   overlayBuilderMap: {
                     mainMenuRoute: (_, MyGame game) => MainMenu(game: game),
                     pauseMenuRoute: (_, MyGame game) => PauseMenu(game: game),
-                    gameOverMenuRoute: (_, MyGame game) =>
-                        GameOverMenu(game: game, () => _showInterstitialAd(), () => _showRewardedInterstitialAd()),
+                    gameOverMenuRoute: (_, MyGame game) => GameOverMenu(
+                        game: game,
+                        ({required VoidCallback onAdClosed}) {
+                          _showInterstitialAd(onAdClosed);
+                        },
+                        () => _showRewardedInterstitialAd(
+                            () => _myGame.resetGame(action: GameOver.resumed))),
                     recordMenuRoute: (_, MyGame game) => RecordMenu(game: game),
                     countdownRoute: (_, MyGame game) => CountdownOverlay(
                         onCountdownComplete: game.onCountdownComplete),
@@ -126,7 +134,8 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Container(
                   padding: const EdgeInsets.all(10),
                   child: IconButton(
-                      onPressed: () => _myGame.resetGame(action: GameOver.start),
+                      onPressed: () =>
+                          _myGame.resetGame(action: GameOver.start),
                       icon: const Icon(Pixel.home))),
             ),
           )
@@ -162,7 +171,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         ));
   }
 
-  void _showInterstitialAd() {
+  void _showInterstitialAd(VoidCallback onAdClosed) {
     if (_interstitialAd == null) {
       print('Warning: attempt to show interstitial before loaded.');
       return;
@@ -174,6 +183,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         print('$ad onAdDismissedFullScreenContent.');
         ad.dispose();
         _createInterstitialAd();
+        onAdClosed();
       },
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
         print('$ad onAdFailedToShowFullScreenContent: $error');
@@ -206,7 +216,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         ));
   }
 
-  void _showRewardedInterstitialAd() {
+  void _showRewardedInterstitialAd(VoidCallback onRewarded) {
     if (_rewardedInterstitialAd == null) {
       print('Warning: attempt to show rewarded interstitial before loaded.');
       return;
@@ -231,7 +241,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     _rewardedInterstitialAd!.setImmersiveMode(true);
     _rewardedInterstitialAd!.show(
         onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
-      print('$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
+      onRewarded();
     });
     _rewardedInterstitialAd = null;
   }

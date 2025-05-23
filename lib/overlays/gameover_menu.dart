@@ -9,7 +9,7 @@ import 'package:pixelarticons/pixel.dart';
 
 class GameOverMenu extends ConsumerWidget {
   final MyGame game;
-  final VoidCallback _showInterstitialAd;
+  final Function({required VoidCallback onAdClosed}) _showInterstitialAd;
   final VoidCallback _showRewardedInterstitialAd;
 
   const GameOverMenu(this._showInterstitialAd, this._showRewardedInterstitialAd,
@@ -53,8 +53,7 @@ class GameOverMenu extends ConsumerWidget {
               children: [
                 IconButton(
                     onPressed: () {
-                      game.resetGame(action: GameOver.start);
-                      _showInterstitialAd();
+                      _showInterstitialAd(onAdClosed: () => game.resetGame(action: GameOver.start));
                     },
                     icon: const Icon(Pixel.home),
                     style: ElevatedButton.styleFrom(
@@ -65,8 +64,7 @@ class GameOverMenu extends ConsumerWidget {
                     )),
                 IconButton(
                     onPressed: () {
-                      game.goToRecordMenu();
-                      _showInterstitialAd();
+                      _showInterstitialAd(onAdClosed: () => game.goToRecordMenu());
                     },
                     icon: const Icon(Pixel.chartbar),
                     style: ElevatedButton.styleFrom(
@@ -155,7 +153,7 @@ class GameOverMenu extends ConsumerWidget {
                     Text(
                       'Hearts Left: ',
                       style: GoogleFonts.pressStart2p(
-                        fontSize: 16,
+                        fontSize: 10,
                         color: Colors.white70,
                       ),
                     ),
@@ -167,7 +165,7 @@ class GameOverMenu extends ConsumerWidget {
                         child: Icon(
                           Pixel.heart,
                           color: Colors.red,
-                          size: 24,
+                          size: 20,
                         ),
                       ),
                     ),
@@ -186,7 +184,7 @@ class GameOverMenu extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.play_circle_filled,
+                      Pixel.play,
                       color: Colors.yellow,
                       size: 16,
                     ),
@@ -212,7 +210,8 @@ class GameOverMenu extends ConsumerWidget {
                   color: Colors.red,
                   onPressed: () {
                     Navigator.pop(context);
-                    game.resetGame(action: GameOver.restarted);
+                    
+                    _showInterstitialAd(onAdClosed: () => game.resetGame(action: GameOver.restarted));
                   },
                 ),
                 _buildActionButton(
@@ -227,7 +226,7 @@ class GameOverMenu extends ConsumerWidget {
                       game.resetGame(action: GameOver.resumed);
                     } else {
                       _showRewardedInterstitialAd();
-                      game.resetGame(action: GameOver.resumed);
+                      // game.resetGame(action: GameOver.resumed);
                     }
                   },
                 ),

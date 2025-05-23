@@ -10,31 +10,31 @@ class PauseMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SafeArea(
-      child: Container(
-        color: Colors.black45,
-        child: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'PAUSED!',
-              style: GoogleFonts.pixelifySans(
-                  color: Colors.white,
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-                height: 140,
-                width: 140,
-                child: IconButton(
-                    onPressed: () {
-                      game.resumeGame();
-                    },
-                    icon: const Icon(Pixel.play, size: 140)))
-          ],
-        )),
+    return Container(
+      alignment: Alignment.center,
+      color: Colors.black45,
+      child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+      Text(
+        'PAUSED!',
+        style: GoogleFonts.pixelifySans(
+            color: Colors.white,
+            fontSize: 48,
+            fontWeight: FontWeight.bold),
       ),
+      SizedBox(
+          height: 140,
+          width: 140,
+          child: IconButton(
+              onPressed: () {
+                game.resumeGame();
+              },
+              icon: const Icon(Pixel.play, size: 140))),
+      
+              // TODO: Add a Collapsible Banner Ads
+              ],
+            ),
     );
   }
 }
