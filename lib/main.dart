@@ -4,8 +4,6 @@
 // Created on: 2025
 
 import 'dart:async';
-import 'dart:ffi';
-
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -105,12 +103,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                     mainMenuRoute: (_, MyGame game) => MainMenu(game: game),
                     pauseMenuRoute: (_, MyGame game) => PauseMenu(game: game),
                     gameOverMenuRoute: (_, MyGame game) => GameOverMenu(
-                        game: game,
-                        ({required VoidCallback onAdClosed}) {
+                            game: game, ({required VoidCallback onAdClosed}) {
                           _showInterstitialAd(onAdClosed);
                         },
-                        () => _showRewardedInterstitialAd(
-                            () => _myGame.resetGame(action: GameOver.resumed))),
+                            () => _showRewardedInterstitialAd(() =>
+                                _myGame.resetGame(action: GameOver.resumed))),
                     recordMenuRoute: (_, MyGame game) => RecordMenu(game: game),
                     countdownRoute: (_, MyGame game) => CountdownOverlay(
                         onCountdownComplete: game.onCountdownComplete),
