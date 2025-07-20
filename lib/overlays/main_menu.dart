@@ -35,7 +35,7 @@ class MainMenu extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Infinite Color Switch Game',
+                'Color Flip Go!',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.pixelifySans(
                   color: Colors.white,

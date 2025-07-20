@@ -143,7 +143,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   void _createInterstitialAd() {
     InterstitialAd.load(
-        adUnitId: 'ca-app-pub-3940256099942544/1033173712',
+        adUnitId: 'ca-app-pub-9441774521479150/2856834219',
         request: request,
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (InterstitialAd ad) {
@@ -194,7 +194,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   void _createRewardedInterstitialAd() {
     RewardedInterstitialAd.load(
-        adUnitId: 'ca-app-pub-3940256099942544/5354046379',
+        adUnitId: 'ca-app-pub-9441774521479150/6042412516',
         request: request,
         rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
           onAdLoaded: (RewardedInterstitialAd ad) {
