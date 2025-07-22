@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:infinite_circle/constant/game_over.dart';
-import 'package:infinite_circle/my_game.dart';
-import 'package:infinite_circle/controller/riverpod.dart';
+import 'package:color_flip_go/constant/game_over.dart';
+import 'package:color_flip_go/my_game.dart';
+import 'package:color_flip_go/controller/riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pixelarticons/pixel.dart';
 
@@ -53,7 +53,9 @@ class GameOverMenu extends ConsumerWidget {
               children: [
                 IconButton(
                     onPressed: () {
-                      _showInterstitialAd(onAdClosed: () => game.resetGame(action: GameOver.start));
+                      _showInterstitialAd(
+                          onAdClosed: () =>
+                              game.resetGame(action: GameOver.start));
                     },
                     icon: const Icon(Pixel.home),
                     style: ElevatedButton.styleFrom(
@@ -64,7 +66,8 @@ class GameOverMenu extends ConsumerWidget {
                     )),
                 IconButton(
                     onPressed: () {
-                      _showInterstitialAd(onAdClosed: () => game.goToRecordMenu());
+                      _showInterstitialAd(
+                          onAdClosed: () => game.goToRecordMenu());
                     },
                     icon: const Icon(Pixel.chartbar),
                     style: ElevatedButton.styleFrom(
@@ -210,8 +213,10 @@ class GameOverMenu extends ConsumerWidget {
                   color: Colors.red,
                   onPressed: () {
                     Navigator.pop(context);
-                    
-                    _showInterstitialAd(onAdClosed: () => game.resetGame(action: GameOver.restarted));
+
+                    _showInterstitialAd(
+                        onAdClosed: () =>
+                            game.resetGame(action: GameOver.restarted));
                   },
                 ),
                 _buildActionButton(

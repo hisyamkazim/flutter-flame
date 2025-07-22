@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:infinite_circle/my_game.dart';
+import 'package:color_flip_go/my_game.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pixelarticons/pixel.dart';
 

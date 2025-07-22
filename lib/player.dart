@@ -9,14 +9,14 @@ import 'package:flame/rendering.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_circle/circle_rotator.dart';
-import 'package:infinite_circle/color_switcher.dart';
-import 'package:infinite_circle/constant/assets.dart';
-import 'package:infinite_circle/constant/keys.dart';
-import 'package:infinite_circle/ground.dart';
-import 'package:infinite_circle/my_game.dart';
-import 'package:infinite_circle/controller/riverpod.dart';
-import 'package:infinite_circle/star_component.dart';
+import 'package:color_flip_go/circle_rotator.dart';
+import 'package:color_flip_go/color_switcher.dart';
+import 'package:color_flip_go/constant/assets.dart';
+import 'package:color_flip_go/constant/keys.dart';
+import 'package:color_flip_go/ground.dart';
+import 'package:color_flip_go/my_game.dart';
+import 'package:color_flip_go/controller/riverpod.dart';
+import 'package:color_flip_go/star_component.dart';
 
 class Player extends PositionComponent
     with HasGameReference<MyGame>, CollisionCallbacks, RiverpodComponentMixin {

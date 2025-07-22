@@ -1,5 +1,5 @@
-import 'package:infinite_circle/db/db_queries.dart';
-import 'package:infinite_circle/db/models/scores.dart';
+import 'package:color_flip_go/db/db_queries.dart';
+import 'package:color_flip_go/db/models/scores.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

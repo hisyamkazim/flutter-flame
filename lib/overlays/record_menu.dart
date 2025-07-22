@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:infinite_circle/constant/game_over.dart';
-import 'package:infinite_circle/my_game.dart';
-import 'package:infinite_circle/controller/riverpod.dart';
+import 'package:color_flip_go/constant/game_over.dart';
+import 'package:color_flip_go/my_game.dart';
+import 'package:color_flip_go/controller/riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pixelarticons/pixel.dart';
 import 'package:confirm_dialog/confirm_dialog.dart';

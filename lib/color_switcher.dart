@@ -4,7 +4,7 @@ import 'package:flame_riverpod/flame_riverpod.dart';
 import 'dart:ui';
 import 'dart:math' as math;
 
-import 'package:infinite_circle/my_game.dart';
+import 'package:color_flip_go/my_game.dart';
 
 class ColorSwitcher extends PositionComponent
     with HasGameReference<MyGame>, CollisionCallbacks, RiverpodComponentMixin {

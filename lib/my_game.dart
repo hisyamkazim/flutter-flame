@@ -13,20 +13,20 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_circle/circle_rotator.dart';
-import 'package:infinite_circle/color_switcher.dart';
-import 'package:infinite_circle/constant/assets.dart';
-import 'package:infinite_circle/constant/game_over.dart';
-import 'package:infinite_circle/constant/keys.dart';
-import 'package:infinite_circle/constant/timescale.dart';
-import 'package:infinite_circle/db/models/scores.dart';
-import 'package:infinite_circle/ground.dart';
-import 'package:infinite_circle/overlays/hud.dart';
-import 'package:infinite_circle/player.dart';
+import 'package:color_flip_go/circle_rotator.dart';
+import 'package:color_flip_go/color_switcher.dart';
+import 'package:color_flip_go/constant/assets.dart';
+import 'package:color_flip_go/constant/game_over.dart';
+import 'package:color_flip_go/constant/keys.dart';
+import 'package:color_flip_go/constant/timescale.dart';
+import 'package:color_flip_go/db/models/scores.dart';
+import 'package:color_flip_go/ground.dart';
+import 'package:color_flip_go/overlays/hud.dart';
+import 'package:color_flip_go/player.dart';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
-import 'package:infinite_circle/controller/riverpod.dart';
-import 'package:infinite_circle/star_component.dart';
+import 'package:color_flip_go/controller/riverpod.dart';
+import 'package:color_flip_go/star_component.dart';
 
 class MyGame extends FlameGame
     with

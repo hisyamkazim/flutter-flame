@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_circle/constant/assets.dart';
-import 'package:infinite_circle/constant/keys.dart';
+import 'package:color_flip_go/constant/assets.dart';
+import 'package:color_flip_go/constant/keys.dart';
 
 class Ground extends PositionComponent with RiverpodComponentMixin {
   Ground({required super.position})

@@ -1,6 +1,6 @@
-import 'package:infinite_circle/constant/keys.dart';
-import 'package:infinite_circle/db/db_helper.dart';
-import 'package:infinite_circle/db/models/scores.dart';
+import 'package:color_flip_go/constant/keys.dart';
+import 'package:color_flip_go/db/db_helper.dart';
+import 'package:color_flip_go/db/models/scores.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
